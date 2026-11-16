@@ -1,0 +1,109 @@
+---
+/**
+ * Mobile-only inquiry bar. Shown only over text: hidden whenever a photo, the hero,
+ * the credentials line, the contact form or the footer reaches the bottom band it occupies.
+ */
+import { Icon } from 'astro-icon/components';
+
+import { site, whatsappUrl } from '../../config/site';
+---
+
+<div class="sticky-cta" data-sticky-cta aria-hidden="true" inert>
+  <a href={site.cta.primary.href} class="primary">{site.cta.primary.label}</a>
+  <a href={whatsappUrl()} class="secondary" target="_blank" rel="noopener">
+    <Icon name="lucide:message-circle" aria-hidden="true" />
+    <span>WhatsApp</span>
+  </a>
+</div>
+
+<style>
+  .sticky-cta {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 30;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1px;
+    background-color: var(--color-line);
+    border-top: 1px solid var(--color-line);
+    padding-bottom: env(safe-area-inset-bottom);
+    transform: translateY(110%);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+  .sticky-cta.is-visible {
+    transform: translateY(0);
+  }
+  .sticky-cta a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3.25rem;
+    padding-inline: 0.875rem;
+    font-size: var(--text-label);
+    letter-spacing: 0.14em;
+    white-space: nowrap;
+    text-transform: uppercase;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .primary {
+    background-color: var(--color-ink);
+    color: var(--color-on-ink);
+  }
+  .secondary {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+  }
+  .secondary :global(svg) {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+  @media (min-width: 64rem) {
+    .sticky-cta {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  function initStickyCta() {
+    const bar = document.querySelector<HTMLElement>('[data-sticky-cta]');
+    if (!bar || bar.dataset.ready) return;
+    bar.dataset.ready = 'true';
+
+    // Anything the bar must never cover. Observed only inside the bottom band where the bar sits.
+    const blockers = document.querySelectorAll('[data-hero], [data-credentials], #contacto, [data-footer], .photo');
+    const blocked = new Set<Element>();
+    const controller = new AbortController();
+
+    const render = () => {
+      const show = blocked.size === 0 && window.scrollY > window.innerHeight * 0.6;
+      bar.classList.toggle('is-visible', show);
+      bar.toggleAttribute('inert', !show);
+      bar.setAttribute('aria-hidden', String(!show));
+    };
+
+    // Bottom ~12% of the viewport (bar height + margin).
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => (e.isIntersecting ? blocked.add(e.target) : blocked.delete(e.target)));
+        render();
+      },
+      { rootMargin: '-88% 0px 0px 0px' },
+    );
+    blockers.forEach((el) => io.observe(el));
+    window.addEventListener('scroll', render, { passive: true, signal: controller.signal });
+
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        io.disconnect();
+        controller.abort();
+      },
+      { once: true },
+    );
+  }
+
+  document.addEventListener('astro:page-load', initStickyCta);
+</script>

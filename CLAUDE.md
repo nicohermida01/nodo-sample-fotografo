@@ -10,7 +10,7 @@ consultas ("Consultar disponibilidad" / WhatsApp). Ver también `AGENTS.md` (con
 - Tailwind CSS v4 vía `@tailwindcss/vite` — tokens en `src/styles/global.css` (`@theme`)
 - Imágenes: `astro:assets` con sharp (`<Image />`, `<Picture />`); sharp elimina EXIF/GPS
 - `@astrojs/sitemap`, `astro-icon` + `@iconify-json/lucide` (íconos locales en `src/assets/icons`)
-- Fuentes self-hosted: `@fontsource-variable/fraunces` (display) y `@fontsource-variable/inter` (cuerpo/UI)
+- Fuentes self-hosted: `@fontsource/instrument-serif` (display) y `@fontsource-variable/inter` (cuerpo/UI)
 - JS solo en islands chicas; si hace falta animación por JS, Motion (motion.dev)
 
 ## Comandos
@@ -107,8 +107,8 @@ Qué tomar de cada una:
   credenciales en fila bajo el hero (años / bodas / lugares), títulos de sección con una línea de 1 px
   que se extiende, "Sobre mí" con dos fotos superpuestas, paquetes en cards con bordes de 1 px y filas
   separadas por divisores finos, acento terracota.
-- **Urban Culture (oscuro)**: metadatos verticales en mayúsculas con tracking muy amplio, numeración
-  grande ("03") como marcador de sección, líneas cortas de 1 px como acentos, sensación de
+- **Urban Culture (oscuro)**: metadatos verticales en mayúsculas con tracking muy amplio, líneas
+  cortas de 1 px como acentos, sensación de
   profundidad al scrollear (perspectiva sutil sobre una pila de fotos).
 - **amanda rosa**: solo la idea de filtros por categoría sobre la grilla (rediseñados como texto con
   subrayado, no pastillas).
@@ -142,8 +142,10 @@ Páginas previstas (no se crean hasta que se pidan):
   completa con lightbox, CTA de consulta al final y navegación anterior/siguiente.
 - **Legales**: política de privacidad (`/privacidad`, por los datos del formulario).
 
-Títulos de sección: display + línea de 1 px que se extiende hasta el borde del contenedor, o número
-grande de sección ("01", "02") en display fino con metadato en versalitas.
+Títulos de sección: display + línea de 1 px que se extiende hasta el borde del contenedor. Sin
+kickers/eyebrows encima de los títulos y sin números de sección decorativos (solo se numeran los pasos
+del proceso, porque la secuencia informa). Las credenciales van como una frase en una línea fina, no
+como bloque de métricas grandes.
 
 Las fotos se muestran respetando su proporción original (nunca recortadas a la fuerza en la galería
 del proyecto). En cards y grillas de la home/portfolio se puede usar un `aspect-ratio` fijo por
@@ -153,9 +155,11 @@ pueden ir a todo el ancho o con márgenes amplios.
 ## SISTEMA VISUAL
 
 - **Tipografía**:
-  - Display: **Fraunces** (variable, self-hosted). Pesos 300–400, nunca bold; `opsz` alto; tracking
-    −0.01 a −0.02em en tamaños grandes; sentence case (el nombre puede ir en versalitas finas).
-    Titular del hero `clamp(3rem, 2rem + 6vw, 7rem)`, h2 `clamp(2rem, 1.5rem + 2.5vw, 3.5rem)`.
+  - Display: **Instrument Serif** (self-hosted, 400 + itálica). Serif editorial de alto contraste,
+    levemente condensada; sentence case; itálica solo para apartes en primera persona. Tracking
+    −0.01 a −0.02em en tamaños grandes. Titular del hero `clamp(3.25rem, 1.75rem + 6vw, 6rem)`
+    (máx. 6rem), h2 `clamp(2.25rem, 1.5rem + 3vw, 4rem)`. Se descartó Fraunces por ser el default
+    más predecible del rubro.
   - Cuerpo y UI: **Inter** (variable). 400/500, cuerpo `clamp(1rem, 0.95rem + 0.25vw, 1.125rem)`,
     interlineado 1.6, medida máx. ~65ch.
   - Metadatos (lugar, fecha, categoría, nav, labels): Inter 11–12 px, MAYÚSCULAS, tracking 0.18–0.24em,

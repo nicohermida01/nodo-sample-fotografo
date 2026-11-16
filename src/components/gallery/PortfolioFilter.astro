@@ -1,0 +1,93 @@
+---
+import { site } from '../../config/site';
+
+interface Props {
+  counts: Record<string, number>;
+}
+
+const { counts } = Astro.props;
+const options = [{ id: 'all', label: site.ui.portfolio.all }, ...site.specialties.map((s) => ({ id: s.id, label: s.shortLabel }))];
+---
+
+<div class="filter" role="group" aria-label={site.ui.portfolio.filterLabel} data-filter>
+  {
+    options.map((option) => (
+      <button type="button" class="option link-draw" data-filter-value={option.id} aria-pressed={option.id === 'all' ? 'true' : 'false'}>
+        {option.label}
+        <sup class="count tabular">{option.id === 'all' ? counts.all : (counts[option.id] ?? 0)}</sup>
+      </button>
+    ))
+  }
+</div>
+
+<style>
+  .filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem clamp(1.25rem, 3vw, 2.5rem);
+  }
+  .option {
+    min-height: 2.75rem;
+    padding: 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 1.25rem + 1vw, 2.25rem);
+    line-height: 1.2;
+    letter-spacing: var(--tracking-display);
+    color: var(--color-muted);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+  .option::after {
+    bottom: 0.35rem;
+  }
+  .option:hover,
+  .option[aria-pressed='true'] {
+    color: var(--color-ink);
+  }
+  .count {
+    font-family: var(--font-sans);
+    font-size: var(--text-label);
+    margin-left: 0.25rem;
+    color: var(--color-muted);
+  }
+</style>
+
+<script>
+  function initFilter() {
+    const root = document.querySelector<HTMLElement>('[data-filter]');
+    if (!root || root.dataset.ready) return;
+    root.dataset.ready = 'true';
+
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-filter-value]')];
+    const items = [...document.querySelectorAll<HTMLElement>('[data-filter-item]')];
+    const empty = document.querySelector<HTMLElement>('[data-filter-empty]');
+    const status = document.querySelector<HTMLElement>('[data-filter-status]');
+    const valid = new Set(buttons.map((b) => b.dataset.filterValue));
+
+    const apply = (value: string, updateUrl: boolean) => {
+      const active = valid.has(value) ? value : 'all';
+      let visible = 0;
+      items.forEach((item) => {
+        const show = active === 'all' || item.dataset.category === active;
+        item.hidden = !show;
+        if (show) visible++;
+      });
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filterValue === active)));
+      if (empty) empty.hidden = visible > 0;
+      if (status) status.textContent = String(visible);
+      if (updateUrl) {
+        const url = new URL(location.href);
+        if (active === 'all') url.searchParams.delete('categoria');
+        else url.searchParams.set('categoria', active);
+        history.replaceState(history.state, '', url);
+      }
+    };
+
+    buttons.forEach((b) => b.addEventListener('click', () => apply(b.dataset.filterValue ?? 'all', true)));
+    apply(new URLSearchParams(location.search).get('categoria') ?? 'all', false);
+  }
+
+  document.addEventListener('astro:page-load', initFilter);
+</script>

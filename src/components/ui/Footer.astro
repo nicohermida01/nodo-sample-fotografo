@@ -1,0 +1,187 @@
+---
+import { Icon } from 'astro-icon/components';
+
+import { site, whatsappUrl } from '../../config/site';
+import Button from './Button.astro';
+
+interface Props {
+  /** Closing inquiry band; off on pages that already end with a CTA. */
+  closing?: boolean;
+}
+
+const { closing = false } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer" data-footer>
+  <div class="container-text">
+    {closing && (
+    <div class="closing">
+      <p class="closing-title">{site.ui.footer.ctaTitle}</p>
+      <div class="closing-actions">
+        <Button href={site.cta.primary.href}>{site.cta.primary.label}</Button>
+        <Button href={whatsappUrl()} variant="text" target="_blank" rel="noopener">
+          <Icon name="lucide:message-circle" aria-hidden="true" />
+          {site.cta.whatsappLabel}
+        </Button>
+      </div>
+    </div>
+    )}
+
+    <div class="grid">
+      <div class="brand">
+        <p class="brand-name">{site.brand.legalName}</p>
+        <p class="tagline">{site.brand.tagline}</p>
+      </div>
+
+      <nav aria-labelledby="footer-nav">
+        <h2 id="footer-nav" class="label col-title">{site.ui.footer.navTitle}</h2>
+        <ul class="list">
+          {
+            site.nav.map((item) => (
+              <li>
+                <a href={item.href} class="link-draw">
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div>
+        <h2 class="label col-title">{site.ui.footer.contactTitle}</h2>
+        <ul class="list">
+          <li><a href={`mailto:${site.contact.email}`} class="link-draw">{site.contact.email}</a></li>
+          <li>
+            <a href={whatsappUrl()} class="link-draw tabular" target="_blank" rel="noopener">{site.contact.whatsappDisplay}</a>
+          </li>
+          <li>
+            <a href={site.social.instagram.url} class="link-draw" target="_blank" rel="noopener">
+              {site.social.instagram.handle}
+            </a>
+          </li>
+          <li class="muted">{site.contact.studio}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="legal">
+      <p class="label">
+        © {year} {site.legal.copyrightHolder}. {site.ui.footer.rights}
+      </p>
+      <a href={site.legal.privacyPath} class="label link-draw">{site.ui.privacyMeta.title}</a>
+      {
+        site.studioCredit.enabled && (
+          <p class="label">
+            {site.studioCredit.label}{' '}
+            <a href={site.studioCredit.url} class="link-draw">
+              {site.studioCredit.name}
+            </a>
+          </p>
+        )
+      }
+    </div>
+
+    {site.demoNotice.enabled && <p class="demo-notice">{site.demoNotice.text}</p>}
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--spacing-section);
+    border-top: 1px solid var(--color-line);
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+  }
+  .closing {
+    display: grid;
+    gap: 2rem;
+    padding-block: clamp(4rem, 8vw, 7rem);
+    border-bottom: 1px solid var(--color-line);
+  }
+  .closing-title {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    line-height: var(--text-h2--line-height);
+    letter-spacing: var(--tracking-display);
+    max-width: 16ch;
+    text-wrap: balance;
+  }
+  .closing-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 2rem;
+  }
+  @media (min-width: 64rem) {
+    .closing {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+    }
+  }
+  .grid {
+    display: grid;
+    gap: 2.5rem;
+    padding-block: 3.5rem;
+  }
+  @media (min-width: 48rem) {
+    .grid {
+      grid-template-columns: 2fr 1fr 1.4fr;
+    }
+  }
+  .brand-name {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    line-height: 1.1;
+  }
+  .tagline {
+    margin-top: 0.75rem;
+    color: var(--color-muted);
+    max-width: 32ch;
+  }
+  .col-title {
+    color: var(--color-muted);
+    margin-bottom: 1rem;
+  }
+  .list {
+    display: grid;
+    gap: 0.25rem;
+    font-size: var(--text-small);
+  }
+  .list a {
+    color: var(--color-ink);
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+  }
+  .list a::after {
+    bottom: 0.7rem;
+  }
+  .muted {
+    color: var(--color-muted);
+    padding-block: 0.6rem;
+  }
+  .legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    align-items: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-line);
+    color: var(--color-muted);
+  }
+  .legal a {
+    color: var(--color-muted);
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+  }
+  .legal a::after {
+    bottom: 0.75rem;
+  }
+  .demo-notice {
+    margin-top: 1rem;
+    font-size: var(--text-small);
+    color: var(--color-ink);
+  }
+</style>

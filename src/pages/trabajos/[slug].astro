@@ -1,35 +1,275 @@
 ---
-/**
- * Route stub: generates /trabajos/[slug] for every project in the collection.
- * Intentionally unstyled — the real project page is built later.
- */
 import type { GetStaticPaths } from 'astro';
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+
+import Lightbox from '../../components/gallery/Lightbox.astro';
+import ProjectGallery from '../../components/gallery/ProjectGallery.astro';
+import ProjectNav from '../../components/gallery/ProjectNav.astro';
+import Button from '../../components/ui/Button.astro';
+import Photo from '../../components/ui/Photo.astro';
+import { getSpecialty, site, whatsappUrl } from '../../config/site';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatMonthYear, isoDate } from '../../lib/format';
+import { coverTransitionName, getProjects, projectUrl, type Project } from '../../lib/projects';
+import { imageObjectLd, personLd } from '../../lib/seo';
 
 export const getStaticPaths = (async () => {
-  const projects = await getCollection('projects', ({ data }) => !data.draft);
-  return projects.map((project) => ({
+  const projects = await getProjects();
+  return projects.map((project, i) => ({
     params: { slug: project.data.slug },
-    props: { project },
+    props: {
+      project,
+      prev: projects[(i - 1 + projects.length) % projects.length],
+      next: projects[(i + 1) % projects.length],
+    },
   }));
 }) satisfies GetStaticPaths;
 
 interface Props {
-  project: CollectionEntry<'projects'>;
+  project: Project;
+  prev: Project;
+  next: Project;
 }
 
-const { project } = Astro.props;
+const { project, prev, next } = Astro.props;
+const { data } = project;
+const specialty = getSpecialty(data.category);
+const t = site.ui.project;
+const pageUrl = new URL(projectUrl(project), site.url).href;
+const vertical = data.orientation === 'vertical';
+
+const jsonLd = [
+  personLd(),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ImageGallery',
+    name: data.title,
+    description: data.summary,
+    url: pageUrl,
+    dateCreated: isoDate(data.date),
+    contentLocation: { '@type': 'Place', name: data.location },
+    genre: specialty.title,
+    author: { '@id': `${site.url}/#person` },
+    primaryImageOfPage: await imageObjectLd(data.cover.src, data.cover.alt, pageUrl),
+  },
+];
+
+const title = `${data.title} · ${specialty.title}`;
+const description = data.seoDescription ?? `${data.summary.slice(0, 120).trim()}… ${specialty.title} en ${data.location}.`;
+const whatsappMessage = `${site.cta.whatsappMessage}algo como "${data.title}".`;
 ---
 
-<html lang="es-AR">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="robots" content="noindex" />
-    <title>{project.data.title}</title>
-  </head>
-  <body>
-    <h1>{project.data.title}</h1>
-    <p>{project.data.gallery.length} fotos · {project.data.category}</p>
-  </body>
-</html>
+<BaseLayout title={title} description={description} ogImage={data.cover.src} ogImageAlt={data.cover.alt} ogType="article" jsonLd={jsonLd}>
+  <article class="project">
+    <header class="container-text head">
+      <a href="/trabajos" class="label back link-draw">
+        <Icon name="lucide:arrow-left" aria-hidden="true" />
+        {t.back}
+      </a>
+      <h1 class="title">{data.title}</h1>
+      <dl class="meta">
+        <div>
+          <dt class="sr-only">{t.metaSpecialty}</dt>
+          <dd class="label">{specialty.title}</dd>
+        </div>
+        <div>
+          <dt class="sr-only">{t.metaPlace}</dt>
+          <dd class="label">{data.location}</dd>
+        </div>
+        <div>
+          <dt class="sr-only">{t.metaDate}</dt>
+          <dd class="label"><time datetime={isoDate(data.date)}>{formatMonthYear(data.date)}</time></dd>
+        </div>
+        <div>
+          <dt class="sr-only">{t.galleryTitle}</dt>
+          <dd class="label tabular">{data.gallery.length} {t.photosCount}</dd>
+        </div>
+      </dl>
+    </header>
+
+    <div class:list={['cover', vertical ? 'cover-vertical' : 'cover-horizontal']}>
+      <div class="cover-frame">
+      <p class="label vertical-meta" aria-hidden="true">
+        {data.location} <span class="vm-rule"></span> {formatMonthYear(data.date)}
+      </p>
+      <Photo
+        src={data.cover.src}
+        alt={data.cover.alt}
+        sizes={vertical ? '(min-width: 64rem) 56vh, 100vw' : '(min-width: 1600px) 1504px, 100vw'}
+        widths={[640, 960, 1280, 1600, 2000, 2400]}
+        eager
+        reveal={false}
+        transitionName={coverTransitionName(project)}
+      />
+      </div>
+    </div>
+
+    <div class="container-text summary">
+      <p>{data.summary}</p>
+    </div>
+
+    <section class="container-text gallery-section" aria-label={t.galleryTitle}>
+      <ProjectGallery project={project} />
+    </section>
+
+    <section class="container-text cta" aria-labelledby="project-cta">
+      <h2 id="project-cta" class="cta-title">{t.ctaTitle}</h2>
+      <p class="cta-text">{t.ctaText}</p>
+      <div class="cta-actions">
+        <Button href={site.cta.primary.href}>{site.cta.primary.label}</Button>
+        <Button href={whatsappUrl(whatsappMessage)} variant="text" target="_blank" rel="noopener">
+          <Icon name="lucide:message-circle" aria-hidden="true" />
+          {site.cta.whatsappLabel}
+        </Button>
+      </div>
+    </section>
+
+    <div class="container-text">
+      <ProjectNav prev={prev} next={next} />
+    </div>
+  </article>
+
+  <Lightbox project={project} />
+</BaseLayout>
+
+<style>
+  .head {
+    padding-top: clamp(2rem, 5vw, 4rem);
+  }
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+  .back :global(svg) {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+  .title {
+    margin-top: clamp(1.5rem, 3vw, 2.5rem);
+    font-size: var(--text-display);
+    line-height: var(--text-display--line-height);
+    max-width: 18ch;
+  }
+  .meta {
+    margin-top: 1.75rem;
+    display: grid;
+    gap: 0.4rem;
+    color: var(--color-muted);
+  }
+  @media (min-width: 48rem) {
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 0;
+    }
+  }
+  .meta > div + div::before {
+    display: none;
+  }
+  @media (min-width: 48rem) {
+    .meta > div + div::before {
+      display: inline-block;
+    }
+  }
+  .meta > div + div::before {
+    content: '';
+    display: inline-block;
+    vertical-align: middle;
+    width: 1.5rem;
+    height: 1px;
+    margin-inline: 0.875rem;
+    background-color: var(--color-line);
+  }
+  .meta > div {
+    display: inline-flex;
+    align-items: center;
+  }
+  .cover {
+    margin-top: clamp(2rem, 5vw, 4rem);
+  }
+  .cover-horizontal {
+    max-width: var(--container-wide);
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+  }
+  .cover-vertical {
+    display: flex;
+    justify-content: center;
+    padding-inline: var(--spacing-gutter);
+  }
+  .cover-vertical .cover-frame {
+    width: min(100%, calc(85svh * 0.75));
+  }
+  .cover-frame {
+    position: relative;
+  }
+  .vertical-meta {
+    display: none;
+  }
+  @media (min-width: 64rem) {
+    .vertical-meta {
+      position: absolute;
+      right: calc(100% + 1rem);
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      white-space: nowrap;
+      color: var(--color-muted);
+    }
+    .vm-rule {
+      display: inline-block;
+      width: 1px;
+      height: 2.5rem;
+      background-color: var(--color-line);
+    }
+  }
+  .summary {
+    margin-top: clamp(2.5rem, 5vw, 4.5rem);
+  }
+  .summary p {
+    max-width: 40ch;
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    line-height: 1.3;
+    letter-spacing: var(--tracking-display);
+  }
+  @media (min-width: 64rem) {
+    .summary p {
+      margin-left: calc(100% / 12 * 4);
+    }
+  }
+  .gallery-section {
+    margin-top: clamp(3rem, 6vw, 6rem);
+  }
+  .cta {
+    margin-top: var(--spacing-section);
+    padding-bottom: clamp(3rem, 6vw, 5rem);
+    text-align: center;
+    display: grid;
+    justify-items: center;
+  }
+  .cta-title {
+    font-size: var(--text-h2);
+    line-height: var(--text-h2--line-height);
+  }
+  .cta-text {
+    margin-top: 1.25rem;
+    max-width: 46ch;
+    color: var(--color-muted);
+  }
+  .cta-actions {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem 2rem;
+  }
+</style>

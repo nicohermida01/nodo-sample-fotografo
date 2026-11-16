@@ -1,0 +1,65 @@
+---
+/**
+ * Display heading followed by a 1px rule that extends to the container edge.
+ */
+interface Props {
+  id?: string;
+  as?: 'h1' | 'h2';
+  intro?: string;
+  /** Rule wraps under the title at full width (for narrow columns). */
+  stacked?: boolean;
+  class?: string;
+}
+
+const { id, as: Tag = 'h2', intro, stacked = false, class: className } = Astro.props;
+---
+
+<div class:list={['section-heading', { stacked }, className]}>
+  <div class="row">
+    <Tag id={id} class="title reveal-text"><slot /></Tag>
+    <span class="rule" aria-hidden="true"></span>
+  </div>
+  {intro && <p class="intro reveal-text">{intro}</p>}
+</div>
+
+<style>
+  .row {
+    display: flex;
+    align-items: baseline;
+    gap: clamp(1rem, 3vw, 2.5rem);
+  }
+  .title {
+    font-size: var(--text-h2);
+    line-height: var(--text-h2--line-height);
+    flex: none;
+    max-width: 100%;
+  }
+  .rule {
+    flex: 1;
+    height: 1px;
+    min-width: 2rem;
+    background-color: var(--color-line);
+    transform: translateY(-0.35em);
+  }
+  .intro {
+    margin-top: 1.25rem;
+    max-width: 52ch;
+    color: var(--color-muted);
+  }
+  .stacked .row {
+    flex-wrap: wrap;
+  }
+  .stacked .rule {
+    flex-basis: 100%;
+    transform: none;
+  }
+  @media (max-width: 40rem) {
+    .row {
+      flex-wrap: wrap;
+    }
+    .rule {
+      flex-basis: 100%;
+      transform: none;
+    }
+  }
+</style>

@@ -1,0 +1,516 @@
+---
+/**
+ * Quote request. Works on a static site through a form service configured in site.form.
+ * Empty endpoint = demo mode: validates, then shows a notice instead of sending.
+ */
+import { Icon } from 'astro-icon/components';
+
+import { site, whatsappUrl } from '../../config/site';
+
+const { contact, form, ui } = site;
+const f = ui.form;
+---
+
+<section id="contacto" class="contact" aria-labelledby="contact-title">
+  <div class="container-text grid">
+    <div class="intro">
+      <h2 id="contact-title" class="title">{contact.title}</h2>
+      <p class="lead">{contact.intro}</p>
+      <p class="response">{contact.responseTime}</p>
+
+      <dl class="direct">
+        <div>
+          <dt class="label">{ui.contactDirect.whatsapp}</dt>
+          <dd>
+            <a href={whatsappUrl()} class="link-accent tabular" target="_blank" rel="noopener">{contact.whatsappDisplay}</a>
+          </dd>
+        </div>
+        <div>
+          <dt class="label">{ui.contactDirect.email}</dt>
+          <dd><a href={`mailto:${contact.email}`} class="link-accent">{contact.email}</a></dd>
+        </div>
+        <div>
+          <dt class="label">{ui.contactDirect.instagram}</dt>
+          <dd>
+            <a href={site.social.instagram.url} class="link-accent" target="_blank" rel="noopener">{site.social.instagram.handle}</a>
+          </dd>
+        </div>
+        <div>
+          <dt class="label">{ui.contactDirect.studio}</dt>
+          <dd>{contact.studio}</dd>
+        </div>
+      </dl>
+    </div>
+
+    <form
+      class="form"
+      novalidate
+      data-quote-form
+      data-provider={form.provider}
+      data-endpoint={form.endpoint}
+      data-access-key={form.accessKey}
+      data-msg-required={f.required}
+      data-msg-email={f.invalidEmail}
+      data-msg-consent={f.consentRequired}
+      data-msg-success={form.successMessage}
+      data-msg-error={form.errorMessage}
+      data-msg-demo={form.demoMessage}
+      data-msg-prefill={f.packagePrefill}
+      data-label-submit={f.submit}
+      data-label-submitting={f.submitting}
+    >
+      <div class="error-summary" role="alert" tabindex="-1" hidden data-error-summary>
+        <p>{f.errorSummary}</p>
+      </div>
+
+      <div class="field">
+        <label for="q-name">{f.name}</label>
+        <input id="q-name" name="name" type="text" autocomplete="name" required aria-describedby="q-name-error" />
+        <p id="q-name-error" class="error" data-error-for="name" hidden></p>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="q-email">{f.email}</label>
+          <input id="q-email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="q-email-error" />
+          <p id="q-email-error" class="error" data-error-for="email" hidden></p>
+        </div>
+        <div class="field">
+          <label for="q-whatsapp">{f.whatsapp} <span class="optional">({f.optional})</span></label>
+          <input id="q-whatsapp" name="whatsapp" type="tel" autocomplete="tel" inputmode="tel" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="q-service">{f.service}</label>
+          <div class="select">
+            <select id="q-service" name="service" required aria-describedby="q-service-error">
+              <option value="">{f.servicePlaceholder}</option>
+              {form.serviceOptions.map((option) => <option value={option}>{option}</option>)}
+            </select>
+            <Icon name="lucide:chevron-down" aria-hidden="true" />
+          </div>
+          <p id="q-service-error" class="error" data-error-for="service" hidden></p>
+        </div>
+        <div class="field">
+          <label for="q-date">{f.date} <span class="optional">({f.optional})</span></label>
+          <input id="q-date" name="date" type="date" aria-describedby="q-date-hint" />
+          <p id="q-date-hint" class="hint">{f.dateHint}</p>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="q-place">{f.place} <span class="optional">({f.optional})</span></label>
+        <input id="q-place" name="place" type="text" autocomplete="address-level2" />
+      </div>
+
+      <div class="field">
+        <label for="q-message">{f.message}</label>
+        <textarea id="q-message" name="message" rows="5" required placeholder={f.messagePlaceholder} aria-describedby="q-message-error"></textarea>
+        <p id="q-message-error" class="error" data-error-for="message" hidden></p>
+      </div>
+
+      <div class="honeypot" aria-hidden="true">
+        <label for="q-botcheck">{f.honeypot}</label>
+        <input id="q-botcheck" name="botcheck" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <div class="field consent">
+        <div class="check">
+          <input id="q-consent" name="consent" type="checkbox" required aria-describedby="q-consent-error" />
+          <label for="q-consent">
+            {form.consentLabel} <a href={site.legal.privacyPath} class="link-accent">{f.privacyLink}</a>.
+          </label>
+        </div>
+        <p id="q-consent-error" class="error" data-error-for="consent" hidden></p>
+      </div>
+
+      <div class="submit-row">
+        <button type="submit" class="submit" data-submit>
+          <span data-submit-label>{f.submit}</span>
+          <Icon name="lucide:arrow-right" aria-hidden="true" />
+        </button>
+      </div>
+
+      <div class="status" role="status" aria-live="polite" data-status hidden></div>
+
+      <p class="fallback">
+        {f.orWrite}{' '}
+        <span class="nowrap"
+          ><a href={whatsappUrl()} class="link-accent" target="_blank" rel="noopener">WhatsApp</a>{' '}<span aria-hidden="true">·</span></span
+        >{' '}
+        <a href={`mailto:${contact.email}`} class="link-accent">{contact.email}</a>
+      </p>
+    </form>
+  </div>
+</section>
+
+<style>
+  .contact {
+    padding-top: var(--spacing-section);
+  }
+  .grid {
+    display: grid;
+    gap: clamp(3rem, 6vw, 6rem);
+  }
+  @media (min-width: 64rem) {
+    .grid {
+      grid-template-columns: 5fr 7fr;
+    }
+  }
+  .title {
+    font-size: var(--text-h2);
+    line-height: var(--text-h2--line-height);
+  }
+  .lead {
+    margin-top: 1.5rem;
+    font-size: var(--text-lead);
+    line-height: var(--text-lead--line-height);
+    max-width: 36ch;
+  }
+  .response {
+    margin-top: 1rem;
+    color: var(--color-muted);
+    font-size: var(--text-small);
+  }
+  .direct {
+    margin-top: 3rem;
+    display: grid;
+    border-top: 1px solid var(--color-line);
+  }
+  .direct > div {
+    display: grid;
+    gap: 0.25rem;
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .direct dt {
+    color: var(--color-muted);
+  }
+  .direct dd a {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+  }
+
+  .form {
+    display: grid;
+    gap: 1.75rem;
+    align-content: start;
+  }
+  .row {
+    display: grid;
+    gap: 1.75rem;
+  }
+  @media (min-width: 40rem) {
+    .row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .field {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+  }
+  label {
+    font-size: var(--text-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .optional {
+    color: var(--color-muted);
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+  input:not([type='checkbox']),
+  select,
+  textarea {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.75rem 0;
+    background-color: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--color-muted);
+    border-radius: 0;
+    font-size: 1rem;
+    appearance: none;
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 8rem;
+    line-height: 1.6;
+  }
+  input:not([type='checkbox']):hover,
+  select:hover,
+  textarea:hover {
+    border-bottom-color: var(--color-ink);
+  }
+  input:not([type='checkbox']):focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: none;
+    border-bottom-color: var(--color-accent);
+    box-shadow: 0 1px 0 0 var(--color-accent);
+  }
+  [aria-invalid='true'] {
+    border-bottom-color: var(--color-danger) !important;
+  }
+  .select {
+    position: relative;
+  }
+  .select select {
+    padding-right: 2rem;
+    cursor: pointer;
+  }
+  .select :global(svg) {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 1rem;
+    height: 1rem;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--color-muted);
+  }
+  .hint {
+    font-size: var(--text-small);
+    color: var(--color-muted);
+  }
+  .error {
+    font-size: var(--text-small);
+    color: var(--color-danger);
+  }
+  .check {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+  }
+  .check input {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.1rem;
+    accent-color: var(--color-ink);
+    cursor: pointer;
+  }
+  .check label {
+    font-size: var(--text-small);
+    letter-spacing: 0;
+    text-transform: none;
+    font-weight: 400;
+    line-height: var(--text-small--line-height);
+    cursor: pointer;
+  }
+  .honeypot {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    min-height: 3.25rem;
+    min-width: min(100%, 18rem);
+    padding: 1rem 1.5rem;
+    background-color: var(--color-ink);
+    color: var(--color-on-ink);
+    border: 0;
+    font-size: var(--text-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+  .submit:hover {
+    background-color: var(--color-accent);
+  }
+  .submit[aria-disabled='true'] {
+    cursor: progress;
+    opacity: 0.7;
+  }
+  .submit :global(svg) {
+    width: 1rem;
+    height: 1rem;
+  }
+  .error-summary,
+  .status {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--color-line);
+    font-size: var(--text-small);
+  }
+  .error-summary {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+  }
+  .error-summary:focus {
+    outline: 2px solid var(--color-danger);
+    outline-offset: 2px;
+  }
+  .status[data-tone='success'] {
+    border-color: var(--color-ink);
+  }
+  .status[data-tone='error'] {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+  }
+  .fallback {
+    font-size: var(--text-small);
+    color: var(--color-muted);
+  }
+  .nowrap {
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+  type Tone = 'success' | 'error' | 'demo';
+
+  function initQuoteForm() {
+    const form = document.querySelector<HTMLFormElement>('[data-quote-form]');
+    if (!form || form.dataset.ready) return;
+    form.dataset.ready = 'true';
+
+    const d = form.dataset;
+    const summary = form.querySelector<HTMLElement>('[data-error-summary]')!;
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const submit = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const submitLabel = form.querySelector<HTMLElement>('[data-submit-label]')!;
+    const field = (name: string) => form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
+    let sending = false;
+
+    const setError = (name: string, message: string) => {
+      const input = field(name);
+      const error = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+      if (!input || !error) return;
+      input.setAttribute('aria-invalid', message ? 'true' : 'false');
+      error.textContent = message;
+      error.hidden = !message;
+    };
+
+    const validate = (): string[] => {
+      const invalid: string[] = [];
+      for (const name of ['name', 'email', 'service', 'message']) {
+        const input = field(name);
+        let message = '';
+        if (input && !input.value.trim()) message = d.msgRequired ?? '';
+        else if (name === 'email' && input && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim())) message = d.msgEmail ?? '';
+        setError(name, message);
+        if (message) invalid.push(name);
+      }
+      const consent = field('consent') as HTMLInputElement | null;
+      const consentMsg = consent?.checked ? '' : (d.msgConsent ?? '');
+      setError('consent', consentMsg);
+      if (consentMsg) invalid.push('consent');
+      return invalid;
+    };
+
+    const showStatus = (tone: Tone, message: string) => {
+      status.dataset.tone = tone;
+      status.textContent = message;
+      status.hidden = false;
+    };
+
+    // Re-validate a field once the visitor fixes it.
+    form.addEventListener('input', (e) => {
+      const target = e.target as HTMLInputElement;
+      if (target.getAttribute('aria-invalid') === 'true') validate();
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (sending) return;
+      status.hidden = true;
+
+      const invalid = validate();
+      if (invalid.length) {
+        summary.hidden = false;
+        summary.focus();
+        return;
+      }
+      summary.hidden = true;
+
+      // Honeypot filled: pretend success, send nothing.
+      if (field('botcheck')?.value) {
+        showStatus('success', d.msgSuccess ?? '');
+        return;
+      }
+
+      if (!d.endpoint) {
+        showStatus('demo', d.msgDemo ?? '');
+        return;
+      }
+
+      sending = true;
+      submit.setAttribute('aria-disabled', 'true');
+      submitLabel.textContent = d.labelSubmitting ?? '';
+
+      try {
+        const data = new FormData(form);
+        data.delete('consent');
+        let response: Response;
+        if (d.provider === 'web3forms') {
+          data.append('access_key', d.accessKey ?? '');
+          data.append('subject', `Consulta web: ${data.get('service') ?? ''}`);
+          response = await fetch(d.endpoint, {
+            method: 'POST',
+            headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+            body: JSON.stringify(Object.fromEntries(data)),
+          });
+        } else {
+          data.delete('botcheck');
+          response = await fetch(d.endpoint, { method: 'POST', headers: { Accept: 'application/json' }, body: data });
+        }
+        if (!response.ok) throw new Error(String(response.status));
+        form.reset();
+        showStatus('success', d.msgSuccess ?? '');
+      } catch {
+        showStatus('error', d.msgError ?? '');
+      } finally {
+        sending = false;
+        submit.removeAttribute('aria-disabled');
+        submitLabel.textContent = d.labelSubmit ?? '';
+      }
+    });
+
+    // Package CTAs preselect the service and seed the message.
+    const prefill = (link: HTMLElement) => {
+      const service = field('service');
+      const message = field('message');
+      if (service && link.dataset.service) service.value = link.dataset.service;
+      if (message && !message.value.trim() && link.dataset.packageName) {
+        message.value = `${d.msgPrefill} ${link.dataset.packageName}. `;
+      }
+    };
+
+    document.querySelectorAll<HTMLAnchorElement>('[data-package]').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        prefill(link);
+        const url = new URL(window.location.href);
+        url.searchParams.set('paquete', link.dataset.package ?? '');
+        url.hash = 'contacto';
+        history.replaceState(history.state, '', url);
+        document.getElementById('contacto')?.scrollIntoView();
+        field('name')?.focus({ preventScroll: true });
+      });
+    });
+
+    const fromUrl = new URLSearchParams(window.location.search).get('paquete');
+    if (fromUrl) {
+      const link = document.querySelector<HTMLElement>(`[data-package="${CSS.escape(fromUrl)}"]`);
+      if (link) prefill(link);
+    }
+  }
+
+  document.addEventListener('astro:page-load', initQuoteForm);
+</script>

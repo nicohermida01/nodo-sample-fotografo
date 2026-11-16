@@ -17,10 +17,14 @@ export default defineConfig({
   },
 
   integrations: [
-    sitemap(),
+    sitemap({ filter: (page) => !page.includes('/404') }),
     icon({
       iconDir: 'src/assets/icons',
-      include: { lucide: ['*'] },
+      include: {
+        lucide: [
+          'arrow-left', 'arrow-right', 'chevron-down', 'menu', 'message-circle', 'pause', 'play', 'plus', 'x',
+        ],
+      },
     }),
   ],
 

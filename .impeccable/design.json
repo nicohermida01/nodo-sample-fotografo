@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-16T12:45:00Z",
+  "title": "Design System: Tomás Aguirre Fotografía",
+  "extensions": {
+    "colorMeta": {
+      "muted-terracotta": { "role": "primary", "displayName": "Muted Terracotta", "canonical": "#9a5536", "tonalRamp": ["oklch(15% 0.03 45)", "oklch(25% 0.05 45)", "oklch(35% 0.07 45)", "oklch(45% 0.09 45)", "oklch(55% 0.1 45)", "oklch(65% 0.09 45)", "oklch(80% 0.05 45)", "oklch(95% 0.015 45)"] },
+      "bone-paper": { "role": "neutral", "displayName": "Bone Paper", "canonical": "#f4efe8", "tonalRamp": ["oklch(15% 0.006 75)", "oklch(25% 0.008 75)", "oklch(35% 0.01 75)", "oklch(45% 0.012 75)", "oklch(55% 0.013 75)", "oklch(65% 0.013 75)", "oklch(80% 0.012 75)", "oklch(95% 0.01 75)"] },
+      "gallery-ink": { "role": "neutral", "displayName": "Gallery Ink", "canonical": "#1f1c19", "tonalRamp": ["oklch(15% 0.006 60)", "oklch(22% 0.007 60)", "oklch(35% 0.008 60)", "oklch(45% 0.009 60)", "oklch(55% 0.009 60)", "oklch(65% 0.008 60)", "oklch(80% 0.006 60)", "oklch(95% 0.004 60)"] },
+      "wall-label-grey": { "role": "neutral", "displayName": "Wall-Label Grey", "canonical": "#6b645c", "tonalRamp": ["oklch(15% 0.008 70)", "oklch(25% 0.01 70)", "oklch(35% 0.012 70)", "oklch(48% 0.014 70)", "oklch(55% 0.014 70)", "oklch(65% 0.013 70)", "oklch(80% 0.01 70)", "oklch(95% 0.006 70)"] },
+      "hairline": { "role": "neutral", "displayName": "Hairline", "canonical": "#d8d0c5", "tonalRamp": ["oklch(15% 0.008 75)", "oklch(25% 0.011 75)", "oklch(35% 0.013 75)", "oklch(45% 0.015 75)", "oklch(55% 0.016 75)", "oklch(65% 0.017 75)", "oklch(86% 0.017 75)", "oklch(95% 0.01 75)"] },
+      "photo-ground": { "role": "neutral", "displayName": "Photo Ground", "canonical": "#ddd6cc", "tonalRamp": ["oklch(15% 0.007 75)", "oklch(25% 0.009 75)", "oklch(35% 0.011 75)", "oklch(45% 0.013 75)", "oklch(55% 0.014 75)", "oklch(65% 0.015 75)", "oklch(87% 0.014 75)", "oklch(95% 0.008 75)"] },
+      "photo-scrim": { "role": "neutral", "displayName": "Photo Scrim", "canonical": "rgb(20 17 14 / 0.62)", "tonalRamp": ["rgb(20 17 14 / 0.9)", "rgb(20 17 14 / 0.8)", "rgb(20 17 14 / 0.7)", "rgb(20 17 14 / 0.62)", "rgb(20 17 14 / 0.5)", "rgb(20 17 14 / 0.35)", "rgb(20 17 14 / 0.2)", "rgb(20 17 14 / 0.08)"] },
+      "oxide-red": { "role": "semantic-error", "displayName": "Oxide Red", "canonical": "#9b2f24", "tonalRamp": ["oklch(15% 0.04 30)", "oklch(25% 0.08 30)", "oklch(35% 0.11 30)", "oklch(45% 0.14 30)", "oklch(55% 0.14 30)", "oklch(65% 0.12 30)", "oklch(80% 0.07 30)", "oklch(95% 0.02 30)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The photographer's name in the hero only; enters line by line." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles, contact title, footer closing line; followed by a hairline rule." },
+      "title": { "displayName": "Title", "purpose": "Package names, specialty titles, testimonial quotes." },
+      "lead": { "displayName": "Lead", "purpose": "Hero tagline, about opening paragraph, contact intro." },
+      "body": { "displayName": "Body", "purpose": "Running text at 52-62ch." },
+      "small": { "displayName": "Small", "purpose": "Inclusions, hints, errors, notes, footer lists." },
+      "label": { "displayName": "Wall Label", "purpose": "Captions, metadata, nav, buttons, form labels, counters. Uppercase." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "The only easing in the system." },
+      { "name": "duration-fast", "value": "300ms", "purpose": "Color and border state changes, header rule, skip link." },
+      { "name": "duration-base", "value": "600ms", "purpose": "Underline draw, text rise, menu items, lightbox crossfade, sticky bar." },
+      { "name": "duration-slow", "value": "900ms", "purpose": "Photo mask reveal (IO fallback), hero crossfade and headline lines, card photo scale." },
+      { "name": "mask-open", "value": "clip-path: inset(14% 0 0 0) + translateY(24px) to none", "purpose": "Photo reveal on scroll; scroll-driven via view() timeline, staggered by 8% of entry range (90ms in fallback)." },
+      { "name": "rise", "value": "opacity 0 + translateY(20px) to none", "purpose": "Text reveal, menu items, FAQ answers, lightbox open." },
+      { "name": "line-up", "value": "translateY(105%) to 0, 120ms per line + 150ms", "purpose": "Hero headline entry, once." },
+      { "name": "drift", "value": "translateY(-4%) to 4%, scale 1.08, cover range", "purpose": "Optional parallax on a photo." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "40rem" },
+      { "name": "md", "value": "48rem" },
+      { "name": "lg", "value": "64rem" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Solid ink rectangle; the one primary action (Consultar disponibilidad).",
+      "html": "<a class=\"ds-btn ds-btn-primary\" href=\"#\">Consultar disponibilidad</a>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.625rem; min-height: 2.75rem; padding: 0.875rem 1.5rem; font-family: var(--font-sans); font-size: var(--text-label); letter-spacing: var(--tracking-label); text-transform: uppercase; font-weight: 500; text-decoration: none; white-space: nowrap; border-radius: 0; transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out); } .ds-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; } .ds-btn-primary { background-color: var(--color-ink); color: var(--color-on-ink); border: 1px solid var(--color-ink); } .ds-btn-primary:hover { background-color: var(--color-accent); border-color: var(--color-accent); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "1px ink outline; inverts to solid ink on hover.",
+      "html": "<a class=\"ds-btn-secondary\" href=\"#\">Ver todos los trabajos</a>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem; padding: 0.875rem 1.5rem; background: transparent; color: var(--color-ink); border: 1px solid var(--color-ink); border-radius: 0; font-family: var(--font-sans); font-size: var(--text-label); letter-spacing: var(--tracking-label); text-transform: uppercase; font-weight: 500; text-decoration: none; transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); } .ds-btn-secondary:hover { background-color: var(--color-ink); color: var(--color-on-ink); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }"
+    },
+    {
+      "name": "Text Button",
+      "kind": "button",
+      "refersTo": "button-text",
+      "description": "Label with a hairline underline that turns terracotta on hover.",
+      "html": "<a class=\"ds-btn-text\" href=\"#\">Escribir por WhatsApp</a>",
+      "css": ".ds-btn-text { display: inline-flex; align-items: center; min-height: 2.75rem; color: var(--color-ink); font-family: var(--font-sans); font-size: var(--text-label); letter-spacing: var(--tracking-label); text-transform: uppercase; font-weight: 500; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.45em; text-decoration-color: var(--color-line); transition: text-decoration-color var(--duration-fast) var(--ease-out); } .ds-btn-text:hover { text-decoration-color: var(--color-accent); } .ds-btn-text:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }"
+    },
+    {
+      "name": "Underline Field",
+      "kind": "input",
+      "refersTo": "input-line",
+      "description": "Bottom-line-only field with a wall-label above; terracotta underline on focus.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"ds-name\">Nombre</label><input class=\"ds-input\" id=\"ds-name\" type=\"text\"></div>",
+      "css": ".ds-field { display: grid; gap: 0.5rem; } .ds-field-label { font-family: var(--font-sans); font-size: var(--text-label); letter-spacing: var(--tracking-label); text-transform: uppercase; font-weight: 500; color: var(--color-ink); } .ds-input { width: 100%; min-height: 3rem; padding: 0.75rem 0; background: transparent; border: 0; border-bottom: 1px solid var(--color-muted); border-radius: 0; font: inherit; font-size: 1rem; color: var(--color-ink); appearance: none; transition: border-color var(--duration-fast) var(--ease-out); } .ds-input:hover { border-bottom-color: var(--color-ink); } .ds-input:focus-visible { outline: none; border-bottom-color: var(--color-accent); box-shadow: 0 1px 0 0 var(--color-accent); } .ds-input[aria-invalid='true'] { border-bottom-color: var(--color-danger); }"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Label-style link whose underline draws in from the left on hover, focus and current page.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-link\" href=\"#\" aria-current=\"page\">Trabajos</a><a class=\"ds-nav-link\" href=\"#\">Paquetes</a><a class=\"ds-nav-link\" href=\"#\">Contacto</a></nav>",
+      "css": ".ds-nav { display: flex; gap: 2rem; } .ds-nav-link { position: relative; display: inline-flex; align-items: center; min-height: 2.75rem; color: var(--color-ink); text-decoration: none; font-family: var(--font-sans); font-size: var(--text-label); letter-spacing: var(--tracking-label); text-transform: uppercase; font-weight: 500; } .ds-nav-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0.65rem; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: right; transition: transform var(--duration-base) var(--ease-out); } .ds-nav-link:hover::after, .ds-nav-link:focus-visible::after, .ds-nav-link[aria-current='page']::after { transform: scaleX(1); transform-origin: left; } .ds-nav-link:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }"
+    },
+    {
+      "name": "Package Card",
+      "kind": "card",
+      "refersTo": "card-package",
+      "description": "Square hairline-bordered offer with a desde price and a full-width CTA row.",
+      "html": "<div class=\"ds-pkg\"><div class=\"ds-pkg-head\"><h4 class=\"ds-pkg-name\">Sesión retrato</h4><p class=\"ds-pkg-price\"><span class=\"ds-pkg-from\">Desde</span><span class=\"ds-pkg-amount\">$180.000</span></p></div><ul class=\"ds-pkg-list\"><li>2 horas de sesión</li><li>40 fotos editadas</li></ul><a class=\"ds-pkg-cta\" href=\"#\"><span>Consultar</span><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></a></div>",
+      "css": ".ds-pkg { display: flex; flex-direction: column; max-width: 22rem; border: 1px solid var(--color-line); background: var(--color-bg); color: var(--color-ink); } .ds-pkg-head { padding: 1.75rem 1.5rem 1.5rem; } .ds-pkg-name { font-family: var(--font-display); font-weight: 400; font-size: var(--text-h3); line-height: 1.1; margin: 0; } .ds-pkg-price { margin: 1.25rem 0 0; display: flex; align-items: baseline; gap: 0.6rem; } .ds-pkg-from { font-size: var(--text-label); letter-spacing: var(--tracking-label); text-transform: uppercase; font-weight: 500; color: var(--color-muted); } .ds-pkg-amount { font-size: 1.5rem; line-height: 1.2; font-weight: 500; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; } .ds-pkg-list { list-style: none; margin: 0; padding: 0 1.5rem; font-size: var(--text-small); } .ds-pkg-list li { padding-block: 0.75rem; border-top: 1px solid var(--color-line); } .ds-pkg-cta { display: flex; align-items: center; justify-content: space-between; min-height: 3.5rem; margin-top: 1rem; padding-inline: 1.5rem; border-top: 1px solid var(--color-line); color: var(--color-ink); text-decoration: none; font-size: var(--text-label); letter-spacing: var(--tracking-label); text-transform: uppercase; font-weight: 500; transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); } .ds-pkg-cta svg { transition: transform var(--duration-base) var(--ease-out); } .ds-pkg-cta:hover { background: var(--color-accent); color: var(--color-on-ink); } .ds-pkg-cta:hover svg { transform: translateX(0.25rem); } .ds-pkg-cta:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }"
+    },
+    {
+      "name": "Section Heading",
+      "kind": "custom",
+      "description": "Serif headline with a 1px hairline running to the container edge on the same baseline.",
+      "html": "<div class=\"ds-sh\"><div class=\"ds-sh-row\"><h2 class=\"ds-sh-title\">Trabajos elegidos</h2><span class=\"ds-sh-rule\"></span></div><p class=\"ds-sh-intro\">Una selección de bodas, retratos y encargos recientes.</p></div>",
+      "css": ".ds-sh-row { display: flex; align-items: baseline; gap: 2rem; } .ds-sh-title { margin: 0; flex: none; font-family: var(--font-display); font-weight: 400; font-size: var(--text-h2); line-height: 1; letter-spacing: var(--tracking-display); } .ds-sh-rule { flex: 1; min-width: 2rem; height: 1px; background: var(--color-line); transform: translateY(-0.35em); } .ds-sh-intro { margin-top: 1.25rem; max-width: 52ch; color: var(--color-muted); }"
+    },
+    {
+      "name": "Project Card",
+      "kind": "card",
+      "description": "Hung photograph with a wall-label caption; photo scales 1.03 on hover.",
+      "html": "<a class=\"ds-card\" href=\"#\"><div class=\"ds-card-photo\"></div><div class=\"ds-card-caption\"><h3 class=\"ds-card-title\">Camila y Andrés</h3><p class=\"ds-card-meta\"><span class=\"ds-card-cat\">Bodas</span><span>Villa La Angostura</span></p></div></a>",
+      "css": ".ds-card { display: block; max-width: 20rem; color: var(--color-ink); text-decoration: none; } .ds-card-photo { aspect-ratio: 4 / 5; overflow: hidden; background: var(--color-photo); transition: transform var(--duration-slow) var(--ease-out); } .ds-card:hover .ds-card-photo { transform: scale(1.03); } .ds-card:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 6px; } .ds-card-caption { padding-top: 1rem; } .ds-card-title { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 1.75rem; line-height: 1.1; letter-spacing: var(--tracking-display); } .ds-card-meta { margin: 0.5rem 0 0; display: grid; gap: 0.2rem; font-size: var(--text-label); letter-spacing: var(--tracking-label); text-transform: uppercase; font-weight: 500; color: var(--color-muted); } .ds-card-cat { color: var(--color-ink); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Gallery Wall",
+    "overview": "The site is a contemporary gallery that happens to take bookings. Photographs are hung, not displayed: they sit on a warm bone-paper wall at their real aspect ratios, with generous margins, a single hairline caption beneath, and nothing competing for the eye. The interface nearly disappears. Type does the structural work that boxes and colors do elsewhere: a large, sentence-case serif for names and section titles, small tracked uppercase sans for every caption, count and piece of metadata, exactly like wall labels.\n\nDensity is low and rhythm is long. Sections are separated by a fluid section space, not by bands of color, and each section heading is a serif title followed by a 1px rule that runs to the container edge. The portfolio \"hang\" is an asymmetric 12-column wall with deliberate vertical offsets, never a uniform grid. Motion is slow and architectural: photographs open upward through a clip-path mask as they enter, the hero headline rises line by line, a project cover morphs into its page. Everything is square-cornered, flat and ruled.\n\nThe system refuses the category default for photographers: a dark full-screen slider with a script logo and stacked service cards.",
+    "keyCharacteristics": [
+      "Warm bone-paper ground, near-black warm ink, one muted terracotta used sparingly.",
+      "Instrument Serif display at large sizes, sentence case; Inter for everything else.",
+      "Wall-label captions: 11px uppercase Inter, 500 weight, 0.2em tracking.",
+      "Square corners everywhere, no shadows, 1px hairline rules as the only structure.",
+      "Photos at their own aspect ratio on a dominant-color ground; cropping only inside fixed-ratio cards.",
+      "Motion grammar: one ease, 300 / 600 / 900ms, transform, opacity and clip-path only."
+    ],
+    "rules": [
+      { "name": "The One Accent Rule", "body": "Terracotta marks interaction (focus, link underline, hover on the primary action) and nothing else. If it appears on a surface at rest, it is wrong.", "section": "colors" },
+      { "name": "The Photographs Are the Color Rule", "body": "Chrome stays within paper, ink, grey and hairline. No tinted section bands, no colored cards; color belongs to the work.", "section": "colors" },
+      { "name": "The Wall Label Rule", "body": "Every caption, metadata line, count and control label is the uppercase tracked label. Labels sit beside or below what they describe, never as a tag line above a heading.", "section": "typography" },
+      { "name": "The Sentence Case Serif Rule", "body": "Display and headings are always sentence case, weight 400, with `text-wrap: balance`. Italic is reserved for the photographer's own quiet asides (the about signature); it is never used for emphasis or decoration.", "section": "typography" },
+      { "name": "The Tabular Count Rule", "body": "Slide counters, photo counts, filter counts, prices, process numbers and phone numbers use tabular numerals.", "section": "typography" },
+      { "name": "The Hang, Not Grid Rule", "body": "Portfolio pieces keep their orientation and are placed with asymmetry and vertical offsets. A uniform card grid is the wrong answer on the home wall.", "section": "layout" },
+      { "name": "The Flat Wall Rule", "body": "Nothing floats. Separation is a 1px hairline or empty space, never a shadow or a raised card.", "section": "elevation" },
+      { "name": "The Square Frame Rule", "body": "Photographs are never rounded, masked into shapes or framed with borders; the frame is the paper around them.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do hang photographs at their real aspect ratio over their dominant color, and crop only inside a fixed-ratio card frame.",
+      "Do caption every piece with the label style (0.6875rem, 500, 0.2em, uppercase) below or beside it.",
+      "Do separate with 1px hairline rules and the fluid section space; end section headings with a rule to the container edge.",
+      "Do keep terracotta to focus, link underlines and the hover of the primary action.",
+      "Do use only the motion grammar: one ease, 300 / 600 / 900ms, transform, opacity and clip-path, with reduced motion honored.",
+      "Do keep every target at least 2.75rem tall and every photo ground set before it loads.",
+      "Do mark placeholder testimonials with a visible hairline-bordered \"Ejemplo\" label."
+    ],
+    "donts": [
+      "Don't use a dark full-screen slider, a script logo or stacked service cards; that is the category default this system refuses.",
+      "Don't round any corner or add any shadow; the wall is flat and square.",
+      "Don't put uppercase labels above headings as tag lines; labels caption things, they don't announce sections.",
+      "Don't use the serif in bold, in all caps, or italic for emphasis; italic belongs only to the photographer's asides.",
+      "Don't fill surfaces with terracotta or tint section backgrounds; the photographs supply the color.",
+      "Don't lay the home portfolio out as a uniform grid of equal cards.",
+      "Don't animate layout properties or add bounce; motion is slow masks and rises only."
+    ]
+  }
+}

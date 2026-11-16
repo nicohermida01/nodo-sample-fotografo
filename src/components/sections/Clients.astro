@@ -1,0 +1,62 @@
+---
+import { site } from '../../config/site';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+const { title, items } = site.clients;
+const hasPlaceholders = items.some((i) => i.placeholder);
+---
+
+<section class="clients" aria-labelledby="clients-title">
+  <div class="container-text">
+    <SectionHeading id="clients-title" intro={hasPlaceholders ? site.ui.clientsNote : undefined}>{title}</SectionHeading>
+    <ul class="list">
+      {
+        items.map((item) => (
+          <li class="item">
+            <span class="name">{item.name}</span>
+            <span class="label kind">
+              {item.kind}
+              {item.placeholder && <> · {site.ui.placeholderClient}</>}
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .clients {
+    padding-top: var(--spacing-section);
+  }
+  .list {
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    display: grid;
+    border-top: 1px solid var(--color-line);
+  }
+  @media (min-width: 48rem) {
+    .list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: clamp(1.5rem, 3vw, 3rem);
+    }
+  }
+  @media (min-width: 64rem) {
+    .list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .item {
+    display: grid;
+    gap: 0.35rem;
+    padding-block: 1.5rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .name {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.15;
+  }
+  .kind {
+    color: var(--color-muted);
+  }
+</style>

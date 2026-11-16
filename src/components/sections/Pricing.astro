@@ -1,0 +1,191 @@
+---
+import { Icon } from 'astro-icon/components';
+
+import { formatPrice, site } from '../../config/site';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+const { title, intro, note, packages } = site.pricing;
+const groups = site.specialties
+  .map((specialty) => ({ specialty, items: packages.filter((p) => p.specialty === specialty.id) }))
+  .filter((g) => g.items.length > 0);
+---
+
+<section id="paquetes" class="pricing" aria-labelledby="pricing-title">
+  <div class="container-text">
+    <SectionHeading id="pricing-title" intro={intro}>{title}</SectionHeading>
+
+    {
+      groups.map(({ specialty, items }) => (
+        <section class="group" aria-labelledby={`pricing-${specialty.id}`}>
+          <h3 id={`pricing-${specialty.id}`} class="group-title">
+            {specialty.title}
+          </h3>
+          <ul class:list={['cards', `cards-${items.length}`]}>
+            {items.map((pkg) => (
+              <li class:list={['card', pkg.highlighted && 'is-highlighted']}>
+                <div class="card-head">
+                  <h4 class="card-name">{pkg.name}</h4>
+                  <p class="price">
+                    {pkg.priceFrom !== null ? (
+                      <>
+                        <span class="label from">{site.ui.pricingFrom}</span>
+                        <span class="amount tabular">{formatPrice(pkg.priceFrom)}</span>
+                      </>
+                    ) : (
+                      <span class="amount">{pkg.priceLabel}</span>
+                    )}
+                  </p>
+                  <p class="duration">{pkg.duration}</p>
+                </div>
+                <ul class="includes">
+                  {pkg.includes.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                  <li class="delivery">{pkg.delivery}</li>
+                </ul>
+                <a
+                  href={`?paquete=${pkg.id}#contacto`}
+                  class="card-cta"
+                  data-package={pkg.id}
+                  data-package-name={`${specialty.shortLabel} · ${pkg.name}`}
+                  data-service={specialty.formService}
+                >
+                  <span>{pkg.ctaLabel}</span>
+                  <Icon name="lucide:arrow-right" aria-hidden="true" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+
+    <p class="note">{note}</p>
+  </div>
+</section>
+
+<style>
+  .pricing {
+    padding-top: var(--spacing-section);
+  }
+  .group {
+    margin-top: clamp(3rem, 6vw, 5rem);
+  }
+  .group-title {
+    font-size: var(--text-h3);
+    line-height: var(--text-h3--line-height);
+    margin-bottom: 1.5rem;
+  }
+  .cards {
+    display: grid;
+    gap: clamp(0.75rem, 1.5vw, 1.25rem);
+  }
+  @media (min-width: 48rem) {
+    .cards-2,
+    .cards-3 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 64rem) {
+    .cards-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .cards-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-line);
+    background-color: var(--color-bg);
+  }
+  .card.is-highlighted {
+    border-color: var(--color-ink);
+  }
+  .card-head {
+    padding: 1.75rem 1.5rem 1.5rem;
+  }
+  .card-name {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--text-h3);
+    line-height: var(--text-h3--line-height);
+  }
+  .price {
+    margin-top: 1.25rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .from {
+    color: var(--color-muted);
+  }
+  .amount {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .duration {
+    margin-top: 0.5rem;
+    font-size: var(--text-small);
+    color: var(--color-muted);
+  }
+  .includes {
+    flex: 1;
+    padding-inline: 1.5rem;
+    font-size: var(--text-small);
+    line-height: var(--text-small--line-height);
+  }
+  .includes li {
+    padding-block: 0.75rem;
+    border-top: 1px solid var(--color-line);
+  }
+  .delivery {
+    color: var(--color-muted);
+  }
+  .card-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 3.5rem;
+    margin-top: 1rem;
+    padding-inline: 1.5rem;
+    border-top: 1px solid var(--color-line);
+    color: var(--color-ink);
+    text-decoration: none;
+    font-size: var(--text-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-weight: 500;
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      color var(--duration-fast) var(--ease-out);
+  }
+  .card.is-highlighted .card-cta {
+    background-color: var(--color-ink);
+    color: var(--color-on-ink);
+    border-top-color: var(--color-ink);
+  }
+  .card-cta:hover,
+  .card.is-highlighted .card-cta:hover {
+    background-color: var(--color-accent);
+    color: var(--color-on-ink);
+  }
+  .card-cta :global(svg) {
+    width: 1rem;
+    height: 1rem;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+  .card-cta:hover :global(svg) {
+    transform: translateX(0.25rem);
+  }
+  .note {
+    margin-top: 2rem;
+    font-size: var(--text-small);
+    color: var(--color-muted);
+  }
+</style>

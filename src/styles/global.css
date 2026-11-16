@@ -1,10 +1,403 @@
 @import "tailwindcss";
 
 /*
- * Design tokens go here (see CLAUDE.md → SISTEMA VISUAL).
- * Planned: --color-bg, --color-surface, --color-ink, --color-muted, --color-line,
- * --color-accent (light default + dark override), --font-display, --font-sans,
- * fluid type scale with clamp(), --ease-out-expo.
+ * Design tokens (see CLAUDE.md → SISTEMA VISUAL).
+ * Light "bone paper" theme is the default; dark override lives under [data-theme="dark"].
+ * Components must only use these tokens, never raw color values.
  */
 @theme {
+  /* Color */
+  --color-bg: #f4efe8;
+  --color-surface: #ece6dd;
+  --color-ink: #1f1c19;
+  --color-muted: #6b645c;
+  --color-line: #d8d0c5;
+  --color-accent: #9a5536;
+  --color-on-ink: #f4efe8;
+  --color-on-photo: #f4efe8;
+  --color-scrim: rgb(20 17 14 / 0.62);
+  --color-photo: #ddd6cc;
+  --color-danger: #9b2f24;
+
+  /* Type */
+  --font-display: "Instrument Serif", "Iowan Old Style", "Times New Roman", serif;
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1.4;
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.55;
+  --text-body: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-body--line-height: 1.65;
+  --text-lead: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+  --text-lead--line-height: 1.5;
+  --text-h3: clamp(1.625rem, 1.35rem + 1.1vw, 2.25rem);
+  --text-h3--line-height: 1.1;
+  --text-h2: clamp(2.25rem, 1.5rem + 3vw, 4rem);
+  --text-h2--line-height: 1;
+  --text-display: clamp(3.25rem, 1.75rem + 6vw, 6rem);
+  --text-display--line-height: 0.95;
+
+  --tracking-label: 0.2em;
+  --tracking-display: -0.015em;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 300ms;
+  --duration-base: 600ms;
+  --duration-slow: 900ms;
+
+  /* Layout */
+  --container-text: 1320px;
+  --container-wide: 1600px;
+  --spacing-gutter: clamp(1rem, 0.5rem + 2.5vw, 3rem);
+  --spacing-section: clamp(5rem, 3rem + 7vw, 10rem);
+  --spacing-header: 4.5rem;
+}
+
+[data-theme="dark"] {
+  --color-bg: #1c1b19;
+  --color-surface: #252321;
+  --color-ink: #ede7df;
+  --color-muted: #a39b91;
+  --color-line: #3a3733;
+  --color-accent: #d08a66;
+  --color-on-ink: #1c1b19;
+  --color-photo: #2c2a27;
+  --color-danger: #e07a6a;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    scroll-padding-top: calc(var(--spacing-header) + 1rem);
+    scrollbar-color: var(--color-muted) var(--color-bg);
+    scrollbar-width: thin;
+    accent-color: var(--color-accent);
+    caret-color: var(--color-accent);
+  }
+
+  html:has(dialog[open]) {
+    overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    background-color: var(--color-bg);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  main {
+    flex: 1;
+  }
+
+  ::selection {
+    background-color: var(--color-ink);
+    color: var(--color-on-ink);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line);
+    border: 3px solid var(--color-bg);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-muted);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: var(--tracking-display);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  a {
+    text-underline-offset: 0.25em;
+    text-decoration-thickness: 1px;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  ::placeholder {
+    color: var(--color-muted);
+    opacity: 1;
+  }
+
+  summary {
+    cursor: pointer;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+@layer components {
+  .line-mask,
+  .line-mask > span {
+    display: inline-block;
+  }
+
+  .container-text {
+    width: 100%;
+    max-width: var(--container-text);
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+  }
+
+  .container-wide {
+    width: 100%;
+    max-width: var(--container-wide);
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+  }
+
+  /* Gallery wall label: small caps with wide tracking. */
+  .label {
+    font-family: var(--font-sans);
+    font-size: var(--text-label);
+    line-height: var(--text-label--line-height);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Underline that draws in from the left on hover/focus. */
+  .link-line {
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 100% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    padding-bottom: 0.15em;
+  }
+
+  .link-draw {
+    text-decoration: none;
+    position: relative;
+  }
+  .link-draw::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.2em;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+  .link-draw:hover::after,
+  .link-draw:focus-visible::after,
+  .link-draw[aria-current="page"]::after,
+  .link-draw[aria-pressed="true"]::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .link-accent {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+    transition: text-decoration-color var(--duration-fast) var(--ease-out);
+  }
+  .link-accent:hover {
+    text-decoration-color: currentColor;
+  }
+
+  /* Photo frame: dominant-color ground while loading, never cropped unless .photo-fill. */
+  .photo {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background-color: var(--color-photo);
+  }
+  .photo picture,
+  .photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .photo-fill picture,
+  .photo-fill img {
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Motion grammar: masks that open upward, eased with --ease-out.
+ * Content is visible by default; only enhanced when motion is allowed.
+ * ------------------------------------------------------------------------- */
+
+@keyframes mask-open {
+  from {
+    clip-path: inset(14% 0 0 0);
+    transform: translateY(24px);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes line-up {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translateY(-4%) scale(1.08);
+  }
+  to {
+    transform: translateY(4%) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Scroll-driven reveal (Chromium, Safari 26+). */
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: mask-open linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+    .reveal[data-stagger="1"] {
+      animation-range: entry 8% entry 63%;
+    }
+    .reveal[data-stagger="2"] {
+      animation-range: entry 16% entry 71%;
+    }
+    .reveal-text {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+    }
+    .parallax > picture,
+    .parallax > img {
+      animation: drift linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+  }
+
+  /* IntersectionObserver fallback: html.io-reveal is set by a tiny script. */
+  @supports not (animation-timeline: view()) {
+    .io-reveal .reveal:not(.is-visible) {
+      clip-path: inset(14% 0 0 0);
+      transform: translateY(24px);
+    }
+    .io-reveal .reveal {
+      transition:
+        clip-path var(--duration-slow) var(--ease-out),
+        transform var(--duration-slow) var(--ease-out);
+    }
+    .io-reveal .reveal[data-stagger="1"] {
+      transition-delay: 90ms;
+    }
+    .io-reveal .reveal[data-stagger="2"] {
+      transition-delay: 180ms;
+    }
+    .io-reveal .reveal-text:not(.is-visible) {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .io-reveal .reveal-text {
+      transition:
+        opacity var(--duration-base) var(--ease-out),
+        transform var(--duration-base) var(--ease-out);
+    }
+  }
+
+  /* Hero headline enters line by line (time-based, once). */
+  .line-mask {
+    overflow: hidden;
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+  }
+  .line-mask > span {
+    animation: line-up var(--duration-slow) var(--ease-out) both;
+    animation-delay: calc(var(--line, 0) * 120ms + 150ms);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
 }

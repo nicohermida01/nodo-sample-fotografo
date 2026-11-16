@@ -1,0 +1,113 @@
+---
+/**
+ * Full project gallery, justified: photos keep their real aspect ratio.
+ * - Panoramic horizontals (≥ 16:10) hang alone at full measure.
+ * - Any other photo pairs with the next one when at least one is vertical; the pair
+ *   is sized by aspect ratio so both share one height (no cropping).
+ * - Leftovers hang alone: horizontals full measure, verticals centered.
+ * On phones, vertical pairs stay side by side; mixed pairs stack.
+ */
+import { site } from '../../config/site';
+import type { Project } from '../../lib/projects';
+import Photo from '../ui/Photo.astro';
+
+interface Props {
+  project: Project;
+}
+
+const { gallery } = Astro.props.project.data;
+type Item = { photo: (typeof gallery)[number]; index: number; ratio: number };
+type Row = { kind: 'pair-vv' | 'pair-mixed' | 'wide' | 'single'; items: Item[] };
+
+const MEASURE = 1224; // container-text inner width at max size
+const items: Item[] = gallery.map((photo, index) => ({ photo, index, ratio: photo.src.width / photo.src.height }));
+const panoramic = (item: Item) => item.ratio >= 1.6;
+
+const rows: Row[] = [];
+for (let i = 0; i < items.length; i++) {
+  const a = items[i];
+  const b = items[i + 1];
+  if (panoramic(a)) {
+    rows.push({ kind: 'wide', items: [a] });
+    continue;
+  }
+  const canPair = b && !panoramic(b) && (a.photo.orientation === 'vertical' || b.photo.orientation === 'vertical');
+  if (canPair) {
+    const both = a.photo.orientation === 'vertical' && b.photo.orientation === 'vertical';
+    rows.push({ kind: both ? 'pair-vv' : 'pair-mixed', items: [a, b] });
+    i++;
+  } else {
+    rows.push({ kind: a.photo.orientation === 'vertical' ? 'single' : 'wide', items: [a] });
+  }
+}
+
+const sizesFor = (row: Row, item: Item): string => {
+  if (row.kind === 'wide') return `(min-width: 1320px) ${MEASURE}px, 100vw`;
+  if (row.kind === 'single') return '(min-width: 64rem) 560px, 75vw';
+  const total = row.items.reduce((sum, it) => sum + it.ratio, 0);
+  const share = item.ratio / total;
+  const mobile = row.kind === 'pair-vv' ? `${Math.round(share * 100)}vw` : '100vw';
+  return `(min-width: 1320px) ${Math.round(MEASURE * share)}px, (min-width: 40rem) ${Math.round(share * 100)}vw, ${mobile}`;
+};
+---
+
+<div class="gallery" data-gallery>
+  {
+    rows.map((row) => (
+      <div class:list={['row', `row-${row.kind}`]}>
+        {row.items.map((item, j) => (
+          <a
+            href={`#foto-${item.index + 1}`}
+            class="item"
+            style={row.kind.startsWith('pair') ? `--ratio:${item.ratio.toFixed(4)}` : undefined}
+            data-lightbox-open={item.index}
+            aria-label={`${site.ui.project.openPhoto} ${item.index + 1}: ${item.photo.alt}`}
+          >
+            <Photo src={item.photo.src} alt={item.photo.alt} sizes={sizesFor(row, item)} stagger={j as 0 | 1} />
+          </a>
+        ))}
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .gallery {
+    --gap: clamp(0.5rem, 1.5vw, 1.25rem);
+    display: grid;
+    gap: var(--gap);
+  }
+  .row-pair-vv,
+  .row-pair-mixed {
+    display: flex;
+    gap: var(--gap);
+  }
+  .row-pair-vv .item,
+  .row-pair-mixed .item {
+    flex: var(--ratio) 1 0%;
+    min-width: 0;
+  }
+  @media (max-width: 39.99rem) {
+    .row-pair-mixed {
+      flex-direction: column;
+    }
+    .row-pair-mixed .item {
+      flex: none;
+    }
+  }
+  .row-single {
+    display: flex;
+    justify-content: center;
+    padding-block: clamp(1rem, 4vw, 3rem);
+  }
+  .row-single .item {
+    width: min(75%, 35rem);
+  }
+  .item {
+    display: block;
+    cursor: zoom-in;
+  }
+  .item:focus-visible {
+    outline-offset: 4px;
+  }
+</style>

@@ -1,0 +1,84 @@
+---
+import { site } from '../../config/site';
+import Photo from '../ui/Photo.astro';
+
+const { title, paragraphs, signature, portrait, secondary } = site.about;
+---
+
+<section id="sobre-mi" class="about" aria-labelledby="about-title">
+  <div class="container-text grid">
+    <div class="photos">
+      <Photo
+        src={portrait.src}
+        alt={portrait.alt}
+        sizes="(min-width: 64rem) 34vw, 82vw"
+        class="portrait"
+      />
+      <Photo
+        src={secondary.src}
+        alt={secondary.alt}
+        sizes="(min-width: 64rem) 24vw, 58vw"
+        class="secondary"
+        stagger={1}
+      />
+    </div>
+
+    <div class="text">
+      <h2 id="about-title" class="title reveal-text">{title}</h2>
+      <div class="body">
+        {paragraphs.map((p) => <p class="reveal-text">{p}</p>)}
+      </div>
+      <p class="signature reveal-text">— {signature}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about {
+    padding-top: var(--spacing-section);
+  }
+  .grid {
+    display: grid;
+    gap: clamp(3rem, 6vw, 6rem);
+    align-items: center;
+  }
+  @media (min-width: 64rem) {
+    .grid {
+      grid-template-columns: 6fr 5fr;
+    }
+  }
+  .photos {
+    position: relative;
+    padding-bottom: 18%;
+  }
+  .photos :global(.portrait) {
+    width: 82%;
+  }
+  .photos :global(.secondary) {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 58%;
+  }
+  .title {
+    font-size: var(--text-h2);
+    line-height: var(--text-h2--line-height);
+  }
+  .body {
+    margin-top: 2rem;
+    display: grid;
+    gap: 1.25rem;
+    max-width: 60ch;
+  }
+  .body p:first-child {
+    font-size: var(--text-lead);
+    line-height: var(--text-lead--line-height);
+  }
+  .signature {
+    margin-top: 2rem;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-h3);
+    color: var(--color-muted);
+  }
+</style>

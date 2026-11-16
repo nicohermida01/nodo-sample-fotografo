@@ -43,6 +43,8 @@ export interface Specialty {
   coverProject: string;
   /** Subtypes shown as tags (e.g. personal, familias, profesionales). */
   subtypes: string[];
+  /** Matching option in form.serviceOptions, preselected from package CTAs. */
+  formService: string;
 }
 
 export interface Package {
@@ -86,6 +88,72 @@ export interface ClientOrPublication {
 
 export type FormProvider = 'formspree' | 'web3forms';
 
+/** Interface copy (labels, buttons, section intros) kept out of components. */
+export interface UiCopy {
+  skipToContent: string;
+  /** Small word next to the name in the header (e.g. "Fotografía"). */
+  brandSuffix: string;
+  homeLabel: string;
+  navLabel: string;
+  mobileNavLabel: string;
+  menuOpen: string;
+  menuClose: string;
+  menuTitle: string;
+  heroPause: string;
+  heroPlay: string;
+  heroSlideLabel: string;
+  featured: { title: string; intro: string; viewAll: string };
+  faqPrompt: { text: string; link: string };
+  specialtiesTitle: string;
+  specialtyLink: string;
+  pricingFrom: string;
+  placeholderTestimonial: string;
+  placeholderClient: string;
+  clientsNote: string;
+  portfolio: { title: string; intro: string; filterLabel: string; all: string; empty: string; results: string; metaTitle: string; metaDescription: string };
+  project: {
+    galleryTitle: string;
+    openPhoto: string;
+    ctaTitle: string;
+    ctaText: string;
+    prev: string;
+    next: string;
+    back: string;
+    photosCount: string;
+    metaSpecialty: string;
+    metaPlace: string;
+    metaDate: string;
+  };
+  lightbox: { label: string; close: string; prev: string; next: string; of: string };
+  form: {
+    name: string;
+    email: string;
+    whatsapp: string;
+    optional: string;
+    service: string;
+    servicePlaceholder: string;
+    date: string;
+    dateHint: string;
+    place: string;
+    message: string;
+    messagePlaceholder: string;
+    packagePrefill: string;
+    privacyLink: string;
+    submit: string;
+    submitting: string;
+    errorSummary: string;
+    required: string;
+    invalidEmail: string;
+    consentRequired: string;
+    orWrite: string;
+    honeypot: string;
+  };
+  contactDirect: { whatsapp: string; email: string; instagram: string; studio: string };
+  footer: { ctaTitle: string; navTitle: string; contactTitle: string; rights: string };
+  notFound: { title: string; text: string; back: string; metaTitle: string };
+  privacyMeta: { title: string; description: string; updated: string };
+}
+
 export interface SiteConfig {
   url: string;
   locale: string;
@@ -99,7 +167,8 @@ export interface SiteConfig {
     seoSuffix: string;
     description: string;
   };
-  credentials: { label: string; value: string }[];
+  /** Short proof phrases rendered as one hairline sentence under the hero. */
+  credentials: string[];
   nav: NavItem[];
   cta: {
     primary: { label: string; href: string };
@@ -107,7 +176,6 @@ export interface SiteConfig {
     whatsappMessage: string;
   };
   hero: {
-    eyebrow: string;
     title: string;
     subtitle: string;
     /** 1 image = static hero, 2-3 images = slow pausable crossfade. */
@@ -158,6 +226,7 @@ export interface SiteConfig {
   };
   legal: { privacyPath: string; copyrightHolder: string };
   demoNotice: { enabled: boolean; text: string };
+  ui: UiCopy;
   /** Discreet footer credit for the template author. */
   studioCredit: { enabled: boolean; label: string; name: string; url: string };
 }
@@ -177,17 +246,13 @@ export const site: SiteConfig = {
     name: 'Tomás Aguirre',
     legalName: 'Tomás Aguirre Fotografía',
     tagline: 'Fotografía honesta para momentos que no se repiten.',
-    role: 'Fotógrafo de bodas, retratos y marcas',
+    role: 'Fotógrafo de bodas, retratos y marcas en Mendoza',
     seoSuffix: 'Fotógrafo en Mendoza',
     description:
       'Soy Tomás Aguirre, fotógrafo de bodas, retratos y marcas en Mendoza. Trabajo en Mendoza, San Juan y bodas de destino.',
   },
 
-  credentials: [
-    { label: 'Años de experiencia', value: '9' },
-    { label: 'Bodas fotografiadas', value: '+150' },
-    { label: 'Dónde trabajo', value: 'Mendoza, San Juan y destino' },
-  ],
+  credentials: ['9 años de experiencia', 'Más de 150 bodas', 'Mendoza, San Juan y destino'],
 
   nav: [
     { label: 'Trabajos', href: '/trabajos' },
@@ -204,7 +269,6 @@ export const site: SiteConfig = {
   },
 
   hero: {
-    eyebrow: 'Fotógrafo en Mendoza',
     title: 'Tomás Aguirre',
     subtitle: 'Fotografía honesta para momentos que no se repiten.',
     images: [
@@ -232,6 +296,7 @@ export const site: SiteConfig = {
         'Cuento el día como pasó, sin interrumpirlo. Estoy desde los preparativos hasta que se apaga la pista, en Mendoza, San Juan o donde decidan casarse.',
       coverProject: 'sofia-y-martin-valle-de-uco',
       subtypes: ['Bodas', 'Civiles', 'Destino', 'Eventos'],
+      formService: 'Boda o evento',
     },
     {
       id: 'retratos',
@@ -241,6 +306,7 @@ export const site: SiteConfig = {
         'Sesiones tranquilas, en el estudio o en exteriores, para que te veas como sos. Retratos personales, de familia y profesionales.',
       coverProject: 'clara-retrato-personal',
       subtypes: ['Personales', 'Familias', 'Profesionales'],
+      formService: 'Retrato personal',
     },
     {
       id: 'marcas',
@@ -250,6 +316,7 @@ export const site: SiteConfig = {
         'Imágenes con criterio para bodegas, restaurantes y marcas de producto. Pensadas para web, redes y prensa, con licencia de uso comercial.',
       coverProject: 'vendimia-bodega-boutique-agrelo',
       subtypes: ['Producto', 'Gastronomía', 'Bodegas'],
+      formService: 'Fotografía para marcas',
     },
   ],
 
@@ -524,6 +591,111 @@ export const site: SiteConfig = {
   demoNotice: {
     enabled: true,
     text: 'Sitio de demostración: el fotógrafo, los trabajos y los precios son ficticios.',
+  },
+
+  ui: {
+    skipToContent: 'Saltar al contenido',
+    brandSuffix: 'Fotografía',
+    homeLabel: 'inicio',
+    navLabel: 'Principal',
+    mobileNavLabel: 'Menú móvil',
+    menuOpen: 'Abrir menú',
+    menuClose: 'Cerrar menú',
+    menuTitle: 'Menú',
+    heroPause: 'Pausar la secuencia de fotos',
+    heroPlay: 'Reanudar la secuencia de fotos',
+    heroSlideLabel: 'Foto',
+    featured: {
+      title: 'Trabajos seleccionados',
+      intro: 'Algunas historias recientes: bodas, retratos y marcas, contadas foto por foto.',
+      viewAll: 'Ver todos los trabajos',
+    },
+    faqPrompt: {
+      text: '¿Te quedó alguna duda que no está acá? Escribime y lo charlamos sin compromiso.',
+      link: 'Hacer una consulta',
+    },
+    specialtiesTitle: 'Qué fotografío',
+    specialtyLink: 'Ver trabajos',
+    pricingFrom: 'Desde',
+    placeholderTestimonial: 'Testimonio de ejemplo',
+    placeholderClient: 'Ejemplo',
+    clientsNote: 'Nombres genéricos de ejemplo para esta demostración.',
+    portfolio: {
+      title: 'Trabajos',
+      intro: 'Bodas, retratos y fotografía para marcas en Mendoza, San Juan y destino. Elegí una especialidad para filtrar.',
+      filterLabel: 'Filtrar por especialidad',
+      all: 'Todos',
+      empty: 'Todavía no hay trabajos en esta especialidad.',
+      results: 'trabajos visibles',
+      metaTitle: 'Trabajos · Fotografía de bodas, retratos y marcas en Mendoza',
+      metaDescription: 'Portfolio de Tomás Aguirre: bodas, retratos y fotografía para marcas en Mendoza, San Juan y bodas de destino.',
+    },
+    project: {
+      galleryTitle: 'Galería',
+      openPhoto: 'Ampliar foto',
+      ctaTitle: '¿Tenés una fecha en mente?',
+      ctaText: 'Contame qué estás planeando y te respondo con disponibilidad y una propuesta a medida.',
+      prev: 'Trabajo anterior',
+      next: 'Trabajo siguiente',
+      back: 'Volver a todos los trabajos',
+      photosCount: 'fotos',
+      metaSpecialty: 'Especialidad',
+      metaPlace: 'Lugar',
+      metaDate: 'Fecha',
+    },
+    lightbox: {
+      label: 'Visor de fotos',
+      close: 'Cerrar visor',
+      prev: 'Foto anterior',
+      next: 'Foto siguiente',
+      of: 'de',
+    },
+    form: {
+      name: 'Nombre',
+      email: 'Email',
+      whatsapp: 'WhatsApp',
+      optional: 'opcional',
+      service: 'Tipo de servicio',
+      servicePlaceholder: 'Elegí una opción',
+      date: 'Fecha estimada',
+      dateHint: 'Si todavía no la tenés, dejalo vacío.',
+      place: 'Lugar',
+      message: 'Mensaje',
+      messagePlaceholder: 'Contame qué tenés en mente: cantidad de invitados, horarios, ideas…',
+      packagePrefill: 'Me interesa el paquete',
+      privacyLink: 'política de privacidad',
+      submit: 'Enviar consulta',
+      submitting: 'Enviando…',
+      errorSummary: 'Revisá los campos marcados para poder enviar la consulta.',
+      required: 'Este campo es obligatorio.',
+      invalidEmail: 'Ingresá un email válido, por ejemplo nombre@correo.com.',
+      consentRequired: 'Necesito tu consentimiento para responderte.',
+      orWrite: 'Si preferís, escribime directo:',
+      honeypot: 'No completes este campo',
+    },
+    contactDirect: {
+      whatsapp: 'WhatsApp',
+      email: 'Email',
+      instagram: 'Instagram',
+      studio: 'Estudio',
+    },
+    footer: {
+      ctaTitle: 'Contame tu fecha y armamos algo a medida.',
+      navTitle: 'Navegación',
+      contactTitle: 'Contacto',
+      rights: 'Todas las fotos tienen derechos reservados.',
+    },
+    notFound: {
+      title: 'Esta página no existe',
+      text: 'Puede que el enlace esté roto o que el trabajo ya no esté publicado.',
+      back: 'Volver al inicio',
+      metaTitle: 'Página no encontrada',
+    },
+    privacyMeta: {
+      title: 'Política de privacidad',
+      description: 'Cómo trato los datos que enviás a través del formulario de consulta.',
+      updated: 'Última actualización:',
+    },
   },
 
   studioCredit: {

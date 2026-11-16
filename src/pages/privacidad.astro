@@ -1,0 +1,51 @@
+---
+import { site } from '../config/site';
+import { privacySections, privacyUpdated } from '../config/privacy';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const sections = site.demoNotice.enabled ? privacySections : privacySections.slice(0, -1);
+const updated = new Intl.DateTimeFormat(site.lang, { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(privacyUpdated));
+---
+
+<BaseLayout title={site.ui.privacyMeta.title} description={site.ui.privacyMeta.description}>
+  <article class="container-text legal">
+    <h1 class="title">{site.ui.privacyMeta.title}</h1>
+    <p class="label updated">{site.ui.privacyMeta.updated} <time datetime={privacyUpdated}>{updated}</time></p>
+    {
+      sections.map((section) => (
+        <section class="block">
+          <h2 class="block-title">{section.title}</h2>
+          {section.paragraphs.map((p) => <p>{p}</p>)}
+        </section>
+      ))
+    }
+  </article>
+</BaseLayout>
+
+<style>
+  .legal {
+    padding-top: clamp(3rem, 7vw, 6rem);
+  }
+  .title {
+    font-size: var(--text-h2);
+    line-height: var(--text-h2--line-height);
+  }
+  .updated {
+    margin-top: 1.25rem;
+    color: var(--color-muted);
+  }
+  .block {
+    margin-top: 3rem;
+    max-width: 68ch;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-line);
+  }
+  .block-title {
+    font-size: var(--text-h3);
+    line-height: var(--text-h3--line-height);
+    margin-bottom: 1rem;
+  }
+  .block p + p {
+    margin-top: 1rem;
+  }
+</style>

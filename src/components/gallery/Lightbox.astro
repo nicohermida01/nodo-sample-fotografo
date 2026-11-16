@@ -1,0 +1,288 @@
+---
+/**
+ * Native <dialog> lightbox: arrows, swipe, Esc, counter, hash per photo (#foto-3),
+ * prev/next preloaded. Slides are server-rendered responsive pictures that only
+ * load when they become the current photo or a neighbour.
+ */
+import { Picture } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
+
+import { site } from '../../config/site';
+import type { Project } from '../../lib/projects';
+
+interface Props {
+  project: Project;
+}
+
+const { gallery, title } = Astro.props.project.data;
+const l = site.ui.lightbox;
+const total = gallery.length;
+---
+
+<dialog class="lightbox" aria-label={`${l.label}: ${title}`} data-lightbox data-total={total} data-of={l.of}>
+  <div class="top">
+    <p class="label counter tabular" aria-hidden="true"><span data-lb-current>1</span> / {total}</p>
+    <p class="sr-only" aria-live="polite" data-lb-announce></p>
+    <button type="button" class="icon-btn" data-lb-close>
+      <Icon name="lucide:x" aria-hidden="true" />
+      <span class="sr-only">{l.close}</span>
+    </button>
+  </div>
+
+  <div class="stage" data-lb-stage>
+    {
+      gallery.map((photo, i) => (
+        <figure class="slide" data-lb-slide={i} hidden>
+          <Picture
+            src={photo.src}
+            alt={photo.alt}
+            formats={['avif', 'webp']}
+            widths={[800, 1200, 1600, 2000, 2400].filter((w) => w <= photo.src.width)}
+            sizes="(min-aspect-ratio: 1/1) 80vw, 100vw"
+            loading="lazy"
+            decoding="async"
+            quality={86}
+          />
+        </figure>
+      ))
+    }
+  </div>
+
+  <div class="nav">
+    <button type="button" class="icon-btn" data-lb-prev>
+      <Icon name="lucide:arrow-left" aria-hidden="true" />
+      <span class="sr-only">{l.prev}</span>
+    </button>
+    <button type="button" class="icon-btn" data-lb-next>
+      <Icon name="lucide:arrow-right" aria-hidden="true" />
+      <span class="sr-only">{l.next}</span>
+    </button>
+  </div>
+</dialog>
+
+<style>
+  .lightbox {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    overflow: hidden;
+  }
+  .lightbox[open] {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+  .lightbox::backdrop {
+    background-color: var(--color-bg);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .lightbox[open] {
+      animation: rise var(--duration-base) var(--ease-out);
+    }
+  }
+  .top,
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem var(--spacing-gutter);
+  }
+  .nav {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  }
+  .counter {
+    color: var(--color-muted);
+  }
+  .icon-btn {
+    display: inline-grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    background: none;
+    border: 1px solid var(--color-line);
+    color: var(--color-ink);
+    cursor: pointer;
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+  .icon-btn:hover {
+    border-color: var(--color-ink);
+  }
+  .icon-btn :global(svg) {
+    width: 1.25rem;
+    height: 1.25rem;
+    stroke-width: 1.5;
+  }
+  .stage {
+    position: relative;
+    min-height: 0;
+    display: grid;
+    overflow: hidden;
+    touch-action: pan-y pinch-zoom;
+    user-select: none;
+  }
+  .slide {
+    grid-area: 1 / 1;
+    min-height: 0;
+    margin: 0;
+    display: grid;
+    place-items: center;
+    padding-inline: var(--spacing-gutter);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .slide.is-current {
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity var(--duration-base) var(--ease-out);
+  }
+  .slide :global(picture) {
+    display: contents;
+  }
+  /* <source> siblings must not create implicit grid rows. */
+  .slide :global(source) {
+    display: none;
+  }
+  .slide :global(img) {
+    grid-area: 1 / 1;
+  }
+  /* Budget: top row (4.5rem) + controls row (4.5rem) + breathing room. */
+  .slide :global(img) {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: calc(100svh - 10rem - env(safe-area-inset-bottom));
+    object-fit: contain;
+  }
+  @media (min-width: 64rem) {
+    /* Side arrows overlay the stage; the bottom row keeps its height so the photo stays centered. */
+    .nav {
+      position: relative;
+      height: 4.5rem;
+      padding: 0;
+    }
+    .nav .icon-btn {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .nav [data-lb-prev] {
+      left: var(--spacing-gutter);
+    }
+    .nav [data-lb-next] {
+      right: var(--spacing-gutter);
+    }
+    .slide {
+      padding-inline: calc(var(--spacing-gutter) + 4rem);
+    }
+  }
+</style>
+
+<script>
+  function initLightbox() {
+    const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+    if (!dialog || dialog.dataset.ready) return;
+    dialog.dataset.ready = 'true';
+
+    const slides = [...dialog.querySelectorAll<HTMLElement>('[data-lb-slide]')];
+    const total = slides.length;
+    const current = dialog.querySelector<HTMLElement>('[data-lb-current]')!;
+    const announce = dialog.querySelector<HTMLElement>('[data-lb-announce]')!;
+    const stage = dialog.querySelector<HTMLElement>('[data-lb-stage]')!;
+    const of = dialog.dataset.of ?? '/';
+    let index = 0;
+    let trigger: HTMLElement | null = null;
+
+    const wrap = (i: number) => (i + total) % total;
+    const hashFor = (i: number) => `#foto-${i + 1}`;
+
+    const render = () => {
+      const near = new Set([wrap(index - 1), wrap(index + 1)]);
+      slides.forEach((slide, i) => {
+        const isCurrent = i === index;
+        // Current and neighbours are rendered so their lazy images load (preload prev/next).
+        slide.hidden = !(isCurrent || near.has(i));
+        slide.classList.toggle('is-current', isCurrent);
+        slide.setAttribute('aria-hidden', String(!isCurrent));
+      });
+      current.textContent = String(index + 1);
+      announce.textContent = `${index + 1} ${of} ${total}`;
+      history.replaceState(history.state, '', `${location.pathname}${location.search}${hashFor(index)}`);
+    };
+
+    const open = (i: number, from?: HTMLElement | null) => {
+      index = wrap(i);
+      trigger = from ?? null;
+      render();
+      if (!dialog.open) dialog.showModal();
+    };
+    const go = (step: number) => {
+      index = wrap(index + step);
+      render();
+    };
+
+    document.querySelectorAll<HTMLAnchorElement>('[data-lightbox-open]').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        open(Number(link.dataset.lightboxOpen), link);
+      });
+    });
+
+    dialog.querySelector('[data-lb-close]')?.addEventListener('click', () => dialog.close());
+    dialog.querySelector('[data-lb-prev]')?.addEventListener('click', () => go(-1));
+    dialog.querySelector('[data-lb-next]')?.addEventListener('click', () => go(1));
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') go(1);
+      if (e.key === 'ArrowLeft') go(-1);
+    });
+    dialog.addEventListener('close', () => {
+      history.replaceState(history.state, '', `${location.pathname}${location.search}`);
+      const target = trigger ?? document.querySelector<HTMLElement>(`[data-lightbox-open="${index}"]`);
+      target?.focus({ preventScroll: false });
+    });
+
+    // Swipe with one finger; two fingers are left to native pinch-zoom.
+    let startX = 0;
+    let startY = 0;
+    let pointers = 0;
+    let tracking = false;
+    stage.addEventListener('pointerdown', (e) => {
+      pointers++;
+      tracking = pointers === 1 && e.pointerType !== 'mouse';
+      startX = e.clientX;
+      startY = e.clientY;
+    });
+    const end = (e: PointerEvent) => {
+      pointers = Math.max(0, pointers - 1);
+      if (!tracking) return;
+      tracking = false;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1);
+    };
+    stage.addEventListener('pointerup', end);
+    stage.addEventListener('pointercancel', () => {
+      pointers = Math.max(0, pointers - 1);
+      tracking = false;
+    });
+
+    // Deep link: /trabajos/slug#foto-3 opens that photo (on load and on hash changes).
+    const openFromHash = () => {
+      const match = location.hash.match(/^#foto-(\d+)$/);
+      if (!match) return;
+      const i = Number(match[1]) - 1;
+      if (i >= 0 && i < total) open(i, document.querySelector<HTMLElement>(`[data-lightbox-open="${i}"]`));
+    };
+    openFromHash();
+    const controller = new AbortController();
+    window.addEventListener('hashchange', openFromHash, { signal: controller.signal });
+    document.addEventListener('astro:before-swap', () => controller.abort(), { once: true });
+  }
+
+  document.addEventListener('astro:page-load', initLightbox);
+</script>

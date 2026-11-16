@@ -1,0 +1,81 @@
+---
+import { site } from '../../config/site';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+const { title, items } = site.testimonials;
+---
+
+<section class="testimonials" aria-labelledby="testimonials-title">
+  <div class="container-text">
+    <SectionHeading id="testimonials-title">{title}</SectionHeading>
+    <ul class="list">
+      {
+        items.map((item) => (
+          <li class="item reveal-text">
+            <figure>
+              <blockquote class="quote">
+                <p>{item.quote}</p>
+              </blockquote>
+              <figcaption class="caption">
+                <span class="author">{item.author}</span>
+                <span class="label context">{item.context}</span>
+                {item.placeholder && <span class="label tag">{site.ui.placeholderTestimonial}</span>}
+              </figcaption>
+            </figure>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .testimonials {
+    padding-top: var(--spacing-section);
+  }
+  .list {
+    margin-top: clamp(3rem, 6vw, 5rem);
+    display: grid;
+    gap: 3rem clamp(1.5rem, 3vw, 3rem);
+  }
+  @media (min-width: 64rem) {
+    .list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .item {
+    border-top: 1px solid var(--color-line);
+    padding-top: 2rem;
+  }
+  .quote {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    line-height: 1.2;
+    letter-spacing: var(--tracking-display);
+  }
+  .quote p::before {
+    content: '“';
+  }
+  .quote p::after {
+    content: '”';
+  }
+  .caption {
+    margin-top: 1.5rem;
+    display: grid;
+    gap: 0.35rem;
+  }
+  .author {
+    font-size: var(--text-small);
+    font-weight: 500;
+  }
+  .context {
+    color: var(--color-muted);
+  }
+  .tag {
+    margin-top: 0.75rem;
+    justify-self: start;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--color-line);
+    color: var(--color-muted);
+  }
+</style>

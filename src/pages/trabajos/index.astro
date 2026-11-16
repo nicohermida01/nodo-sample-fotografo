@@ -1,0 +1,102 @@
+---
+import PortfolioFilter from '../../components/gallery/PortfolioFilter.astro';
+import ProjectCard from '../../components/gallery/ProjectCard.astro';
+import { site } from '../../config/site';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getProjects } from '../../lib/projects';
+
+const projects = await getProjects();
+const counts: Record<string, number> = { all: projects.length };
+projects.forEach((p) => (counts[p.data.category] = (counts[p.data.category] ?? 0) + 1));
+const t = site.ui.portfolio;
+---
+
+<BaseLayout title={t.metaTitle} description={t.metaDescription} ogImage={projects[0]?.data.cover.src} ogImageAlt={projects[0]?.data.cover.alt} footerClosing>
+  <section class="portfolio" aria-labelledby="portfolio-title">
+    <div class="container-text head">
+      <h1 id="portfolio-title" class="title">{t.title}</h1>
+      <p class="intro">{t.intro}</p>
+      <PortfolioFilter counts={counts} />
+      <p class="sr-only" aria-live="polite"><span data-filter-status>{projects.length}</span> {t.results}</p>
+    </div>
+
+    <ul class="container-wide grid">
+      {
+        projects.map((project, i) => (
+          <li class:list={['cell', `cell-${project.data.orientation}`]} data-filter-item data-category={project.data.category}>
+            <ProjectCard
+              project={project}
+              headingLevel="h2"
+              stagger={(i % 3) as 0 | 1 | 2}
+              sizes={
+                project.data.orientation === 'vertical'
+                  ? '(min-width: 64rem) 31vw, (min-width: 40rem) 48vw, 50vw'
+                  : '(min-width: 64rem) 64vw, 100vw'
+              }
+            />
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="container-text empty" data-filter-empty hidden>{t.empty}</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .head {
+    padding-top: clamp(3rem, 7vw, 6rem);
+  }
+  .title {
+    font-size: var(--text-display);
+    line-height: var(--text-display--line-height);
+  }
+  .intro {
+    margin-top: 1.5rem;
+    max-width: 52ch;
+    font-size: var(--text-lead);
+    line-height: var(--text-lead--line-height);
+    color: var(--color-muted);
+  }
+  .head :global([data-filter]) {
+    margin-top: clamp(2rem, 4vw, 3rem);
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .grid {
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row dense;
+    gap: clamp(2.5rem, 5vw, 4.5rem) clamp(0.75rem, 1.5vw, 1.5rem);
+  }
+  .cell-horizontal {
+    grid-column: span 2;
+  }
+  @media (min-width: 40rem) {
+    .grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .cell-vertical {
+      grid-column: span 2;
+    }
+    .cell-horizontal {
+      grid-column: span 4;
+    }
+  }
+  @media (min-width: 64rem) {
+    .grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+    .cell-vertical {
+      grid-column: span 2;
+    }
+    .cell-horizontal {
+      grid-column: span 4;
+    }
+  }
+  .empty {
+    margin-top: 3rem;
+    color: var(--color-muted);
+  }
+</style>

@@ -1,0 +1,126 @@
+---
+/**
+ * Curated hang of featured projects: varied rhythm of verticals, horizontals
+ * and one full-width piece, placed on a 12-column wall.
+ */
+import { site } from '../../config/site';
+import { getProjects, type Project } from '../../lib/projects';
+import ProjectCard from '../gallery/ProjectCard.astro';
+import Button from '../ui/Button.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+const featured = (await getProjects()).filter((p) => p.data.featured);
+
+// Lead with a horizontal piece at full width, then alternate the rest.
+const horizontals = featured.filter((p) => p.data.orientation === 'horizontal');
+const verticals = featured.filter((p) => p.data.orientation === 'vertical');
+const ordered: Project[] = [];
+const lead = horizontals.shift();
+if (lead) ordered.push(lead);
+while (horizontals.length || verticals.length) {
+  const v = verticals.shift();
+  if (v) ordered.push(v);
+  const h = horizontals.shift();
+  if (h) ordered.push(h);
+}
+
+interface Slot {
+  className: string;
+  sizes: string;
+  aspect?: string;
+}
+
+let vCount = 0;
+let hCount = 0;
+const slotFor = (project: Project, i: number): Slot => {
+  if (i === 0) return { className: 'slot-full', sizes: '(min-width: 1600px) 1504px, 100vw', aspect: '16 / 9' };
+  if (project.data.orientation === 'vertical') {
+    const className = ['slot-v-left', 'slot-v-right', 'slot-v-center'][vCount++ % 3];
+    return { className, sizes: '(min-width: 64rem) 30vw, (min-width: 40rem) 50vw, 100vw' };
+  }
+  const className = ['slot-h-right', 'slot-h-left', 'slot-h-wide'][hCount++ % 3];
+  return { className, sizes: '(min-width: 64rem) 60vw, 100vw' };
+};
+---
+
+<section class="featured" aria-labelledby="featured-title">
+  <div class="container-text">
+    <SectionHeading id="featured-title" intro={site.ui.featured.intro}>{site.ui.featured.title}</SectionHeading>
+  </div>
+
+  <div class="container-wide wall">
+    {
+      ordered.map((project, i) => {
+        const slot = slotFor(project, i);
+        return (
+          <ProjectCard
+            project={project}
+            sizes={slot.sizes}
+            aspect={slot.aspect}
+            stagger={(i % 2) as 0 | 1}
+            class={slot.className}
+          />
+        );
+      })
+    }
+  </div>
+
+  <div class="container-text more">
+    <Button href="/trabajos" variant="secondary">{site.ui.featured.viewAll}</Button>
+  </div>
+</section>
+
+<style>
+  .featured {
+    padding-top: var(--spacing-section);
+  }
+  .wall {
+    margin-top: clamp(3rem, 6vw, 5rem);
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(0.75rem, 2vw, 2rem);
+    row-gap: clamp(3rem, 7vw, 7rem);
+  }
+  .wall > :global(*) {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 40rem) {
+    .wall > :global(.slot-v-left),
+    .wall > :global(.slot-v-center) {
+      grid-column: 1 / span 6;
+    }
+    .wall > :global(.slot-v-right) {
+      grid-column: 7 / span 6;
+    }
+  }
+  @media (min-width: 64rem) {
+    .wall {
+      grid-auto-flow: row dense;
+    }
+    .wall > :global(.slot-v-left) {
+      grid-column: 2 / span 4;
+    }
+    .wall > :global(.slot-h-right) {
+      grid-column: 6 / span 7;
+      margin-top: 8rem;
+    }
+    .wall > :global(.slot-v-right) {
+      grid-column: 9 / span 4;
+      margin-top: 6rem;
+    }
+    .wall > :global(.slot-h-left) {
+      grid-column: 1 / span 7;
+    }
+    .wall > :global(.slot-v-center) {
+      grid-column: 5 / span 4;
+    }
+    .wall > :global(.slot-h-wide) {
+      grid-column: 3 / span 9;
+    }
+  }
+  .more {
+    margin-top: clamp(3rem, 6vw, 5rem);
+    display: flex;
+    justify-content: center;
+  }
+</style>

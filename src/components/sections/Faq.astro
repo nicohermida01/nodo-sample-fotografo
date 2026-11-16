@@ -1,0 +1,105 @@
+---
+import { Icon } from 'astro-icon/components';
+
+import { site } from '../../config/site';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+const { title, items } = site.faq;
+---
+
+<section id="preguntas" class="faq" aria-labelledby="faq-title">
+  <div class="container-text grid">
+    <div class="aside">
+      <SectionHeading id="faq-title" stacked>{title}</SectionHeading>
+      <p class="prompt">{site.ui.faqPrompt.text}</p>
+      <a href={site.cta.primary.href} class="link-accent prompt-link">{site.ui.faqPrompt.link}</a>
+    </div>
+    <div class="list">
+      {
+        items.map((item) => (
+          <details class="item">
+            <summary class="question">
+              <span>{item.question}</span>
+              <Icon name="lucide:plus" aria-hidden="true" class="icon" />
+            </summary>
+            <p class="answer">{item.answer}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq {
+    padding-top: var(--spacing-section);
+  }
+  .grid {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4rem);
+  }
+  @media (min-width: 64rem) {
+    .grid {
+      grid-template-columns: 5fr 7fr;
+      align-items: start;
+    }
+    .aside {
+      position: sticky;
+      top: calc(var(--spacing-header) + 2rem);
+    }
+  }
+  .prompt {
+    margin-top: 1.5rem;
+    max-width: 34ch;
+    color: var(--color-muted);
+  }
+  .prompt-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    margin-top: 0.5rem;
+  }
+  .list {
+    border-top: 1px solid var(--color-line);
+  }
+  .item {
+    border-bottom: 1px solid var(--color-line);
+  }
+  .question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    min-height: 2.75rem;
+    padding-block: 1.5rem;
+    list-style: none;
+    font-family: var(--font-display);
+    font-size: clamp(1.375rem, 1.2rem + 0.8vw, 1.875rem);
+    line-height: 1.2;
+    letter-spacing: var(--tracking-display);
+  }
+  .question :global(.icon) {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    stroke-width: 1.5;
+    color: var(--color-muted);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+  .item[open] .question :global(.icon) {
+    transform: rotate(45deg);
+  }
+  .question:hover :global(.icon) {
+    color: var(--color-ink);
+  }
+  .answer {
+    padding-bottom: 1.75rem;
+    max-width: 62ch;
+    color: var(--color-muted);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .item[open] .answer {
+      animation: rise var(--duration-base) var(--ease-out) both;
+    }
+  }
+</style>

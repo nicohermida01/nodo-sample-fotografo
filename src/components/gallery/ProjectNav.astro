@@ -1,0 +1,97 @@
+---
+import { Icon } from 'astro-icon/components';
+
+import { site } from '../../config/site';
+import { projectUrl, type Project } from '../../lib/projects';
+
+interface Props {
+  prev: Project;
+  next: Project;
+}
+
+const { prev, next } = Astro.props;
+const t = site.ui.project;
+---
+
+<nav class="project-nav" aria-label={`${t.prev} / ${t.next}`}>
+  <a href={projectUrl(prev)} class="link prev" rel="prev">
+    <span class="label dir"><Icon name="lucide:arrow-left" aria-hidden="true" /> {t.prev}</span>
+    <span class="title">{prev.data.title}</span>
+  </a>
+  <a href={projectUrl(next)} class="link next" rel="next">
+    <span class="label dir">{t.next} <Icon name="lucide:arrow-right" aria-hidden="true" /></span>
+    <span class="title">{next.data.title}</span>
+  </a>
+</nav>
+
+<style>
+  .project-nav {
+    display: grid;
+    border-top: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-line);
+  }
+  @media (min-width: 48rem) {
+    .project-nav {
+      grid-template-columns: 1fr 1fr;
+    }
+    .next {
+      border-left: 1px solid var(--color-line);
+      text-align: right;
+      align-items: flex-end;
+    }
+  }
+  .link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 2rem 0;
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+  @media (min-width: 48rem) {
+    .prev {
+      padding-right: 2rem;
+    }
+    .next {
+      padding-left: 2rem;
+    }
+  }
+  .prev + .next {
+    border-top: 1px solid var(--color-line);
+  }
+  @media (min-width: 48rem) {
+    .prev + .next {
+      border-top: 0;
+    }
+  }
+  .dir {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-muted);
+  }
+  .dir :global(svg) {
+    width: 0.875rem;
+    height: 0.875rem;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+  .title {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    line-height: var(--text-h3--line-height);
+    letter-spacing: var(--tracking-display);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+  .link:hover .title {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    text-decoration-color: var(--color-accent);
+  }
+  .prev:hover .dir :global(svg) {
+    transform: translateX(-0.25rem);
+  }
+  .next:hover .dir :global(svg) {
+    transform: translateX(0.25rem);
+  }
+</style>

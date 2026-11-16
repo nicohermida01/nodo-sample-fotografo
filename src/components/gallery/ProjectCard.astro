@@ -1,0 +1,136 @@
+---
+/**
+ * Project card with a wall-label caption. The cover shares its transition name
+ * with the project page cover so it morphs on navigation.
+ */
+import { Icon } from 'astro-icon/components';
+
+import { getSpecialty, site } from '../../config/site';
+import { coverTransitionName, projectUrl, type Project } from '../../lib/projects';
+import Photo from '../ui/Photo.astro';
+
+interface Props {
+  project: Project;
+  sizes: string;
+  /** CSS aspect ratio of the frame; defaults to the cover orientation (4/5 or 3/2). */
+  aspect?: string;
+  stagger?: 0 | 1 | 2;
+  headingLevel?: 'h2' | 'h3';
+  class?: string;
+  morph?: boolean;
+}
+
+const { project, sizes, aspect, stagger = 0, headingLevel: Heading = 'h3', class: className, morph = true } = Astro.props;
+const { data } = project;
+const frameAspect = aspect ?? (data.orientation === 'vertical' ? '4 / 5' : '3 / 2');
+---
+
+<article class:list={['card', className]} data-category={data.category}>
+  <a href={projectUrl(project)} class="card-link">
+    <Photo
+      src={data.cover.src}
+      alt={data.cover.alt}
+      sizes={sizes}
+      fill
+      aspect={frameAspect}
+      stagger={stagger}
+      transitionName={morph ? coverTransitionName(project) : undefined}
+      class="card-photo"
+    />
+    <div class="caption">
+      <Heading class="card-title">{data.title}</Heading>
+      <p class="label meta">
+        <span class="meta-cat">{getSpecialty(data.category).shortLabel}</span>
+        <span class="meta-place">{data.location}</span>
+      </p>
+      <span class="more label" aria-hidden="true">
+        {site.ui.specialtyLink}
+        <Icon name="lucide:arrow-right" />
+      </span>
+    </div>
+  </a>
+</article>
+
+<style>
+  .card {
+    container-type: inline-size;
+  }
+  .card-link {
+    display: block;
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+  .card-link :global(.card-photo img) {
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+  .caption {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 1rem;
+    padding-top: 1rem;
+  }
+  .card-title {
+    grid-column: 1;
+    font-size: clamp(1.125rem, 0.5rem + 5cqi, 2.25rem);
+    line-height: var(--text-h3--line-height);
+  }
+  .meta {
+    grid-column: 1;
+    margin-top: 0.5rem;
+    display: grid;
+    gap: 0.2rem;
+    color: var(--color-muted);
+  }
+  .meta-cat {
+    color: var(--color-ink);
+  }
+  .meta-place {
+    text-wrap: balance;
+  }
+  @container (max-width: 15rem) {
+    .meta {
+      letter-spacing: 0.1em;
+    }
+  }
+  /* Narrow cards: the hover cue would steal the title's width. */
+  @container (max-width: 22rem) {
+    .more {
+      display: none !important;
+    }
+  }
+  .more {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+    display: none;
+    align-items: center;
+    gap: 0.4rem;
+    padding-top: 0.6rem;
+    color: var(--color-ink);
+  }
+  .more :global(svg) {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+  @media (hover: hover) {
+    .more {
+      display: inline-flex;
+      opacity: 0;
+      transform: translateX(-0.5rem);
+      transition:
+        opacity var(--duration-fast) var(--ease-out),
+        transform var(--duration-base) var(--ease-out);
+    }
+    .card-link:hover :global(.card-photo img) {
+      transform: scale(1.03);
+    }
+    .card-link:hover .more,
+    .card-link:focus-visible .more {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  .card-link:focus-visible {
+    outline-offset: 6px;
+  }
+</style>

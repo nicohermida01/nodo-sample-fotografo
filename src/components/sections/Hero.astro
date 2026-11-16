@@ -1,0 +1,242 @@
+---
+/**
+ * Full-bleed hero. 1 image = static; 2–3 images = slow, pausable crossfade.
+ * Reduced motion: the sequence never starts (first photo only).
+ */
+import { Icon } from 'astro-icon/components';
+
+import { site, whatsappUrl } from '../../config/site';
+import Button from '../ui/Button.astro';
+import Photo from '../ui/Photo.astro';
+
+const { images, title, subtitle } = site.hero;
+const isSequence = images.length > 1;
+const lines = title.split(' ');
+---
+
+<section class="hero" aria-labelledby="hero-title" data-hero>
+  <div class="slides" data-hero-slides>
+    {
+      images.map((image, i) => (
+        <div class:list={['slide', i === 0 && 'is-active']} data-slide aria-hidden={i === 0 ? undefined : 'true'}>
+          <Photo
+            src={image.src}
+            alt={image.alt}
+            sizes="100vw"
+            widths={[640, 960, 1280, 1600, 1920, 2400]}
+            fill
+            aspect="auto"
+            eager={i === 0}
+            reveal={false}
+            class="slide-photo"
+          />
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="scrim" aria-hidden="true"></div>
+
+  <div class="container-wide content">
+    <div class="text">
+      <h1 id="hero-title" class="title">
+        {
+          lines.map((line, i) => (
+            <>
+              <span class="line-mask" style={`--line:${i}`}>
+                <span>{line}</span>
+              </span>{i < lines.length - 1 && ' '}
+            </>
+          ))
+        }
+      </h1>
+      <p class="role label">{site.brand.role}</p>
+      <p class="subtitle">{subtitle}</p>
+      <div class="actions">
+        <Button href={site.cta.primary.href}>{site.cta.primary.label}</Button>
+        <Button href={whatsappUrl()} variant="on-photo" target="_blank" rel="noopener">
+          <Icon name="lucide:message-circle" aria-hidden="true" />
+          {site.cta.whatsappLabel}
+        </Button>
+      </div>
+    </div>
+
+    {
+      isSequence && (
+        <div class="controls">
+          <p class="counter label tabular" aria-live="off">
+            <span data-hero-current>01</span> / {String(images.length).padStart(2, '0')}
+          </p>
+          <button
+            type="button"
+            class="pause"
+            data-hero-toggle
+            aria-pressed="false"
+            data-label-pause={site.ui.heroPause}
+            data-label-play={site.ui.heroPlay}
+          >
+            <Icon name="lucide:pause" class="icon-pause" aria-hidden="true" />
+            <Icon name="lucide:play" class="icon-play" aria-hidden="true" />
+            <span class="sr-only" data-hero-toggle-label>{site.ui.heroPause}</span>
+          </button>
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    height: calc(100svh - var(--spacing-header));
+    min-height: 34rem;
+    max-height: 68rem;
+    overflow: hidden;
+    color: var(--color-on-photo);
+    background-color: var(--color-photo);
+  }
+  .slides,
+  .slide {
+    position: absolute;
+    inset: 0;
+  }
+  .slide {
+    opacity: 0;
+    transition: opacity var(--duration-slow) var(--ease-out);
+  }
+  .slide.is-active {
+    opacity: 1;
+  }
+  .slide :global(.slide-photo) {
+    height: 100%;
+  }
+  .scrim {
+    position: absolute;
+    inset: 30% 0 0 0;
+    background: linear-gradient(to top, var(--color-scrim), transparent);
+    pointer-events: none;
+  }
+  .content {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-bottom: clamp(2rem, 5vw, 4rem);
+  }
+  .title {
+    font-size: var(--text-display);
+    line-height: var(--text-display--line-height);
+  }
+  .role {
+    margin-top: 1.25rem;
+  }
+  .subtitle {
+    margin-top: 0.75rem;
+    font-size: var(--text-lead);
+    line-height: var(--text-lead--line-height);
+    max-width: 30ch;
+  }
+  .actions {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .controls {
+    display: none;
+    align-items: center;
+    gap: 1rem;
+  }
+  .pause {
+    display: inline-grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid currentColor;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      color var(--duration-fast) var(--ease-out);
+  }
+  .pause:hover {
+    background-color: var(--color-on-photo);
+    color: var(--color-ink);
+  }
+  .pause :global(svg) {
+    width: 1rem;
+    height: 1rem;
+  }
+  .pause :global(.icon-play),
+  .pause[aria-pressed='true'] :global(.icon-pause) {
+    display: none;
+  }
+  .pause[aria-pressed='true'] :global(.icon-play) {
+    display: block;
+  }
+  @media (min-width: 48rem) {
+    .controls {
+      display: flex;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .controls {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const INTERVAL = 6500;
+
+  function initHero() {
+    const slidesRoot = document.querySelector<HTMLElement>('[data-hero-slides]');
+    if (!slidesRoot || slidesRoot.dataset.ready) return;
+    slidesRoot.dataset.ready = 'true';
+
+    const slides = [...slidesRoot.querySelectorAll<HTMLElement>('[data-slide]')];
+    if (slides.length < 2) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const toggle = document.querySelector<HTMLButtonElement>('[data-hero-toggle]');
+    const toggleLabel = document.querySelector<HTMLElement>('[data-hero-toggle-label]');
+    const current = document.querySelector<HTMLElement>('[data-hero-current]');
+    let index = 0;
+    let timer: number | undefined;
+    let paused = false;
+
+    const show = (next: number) => {
+      slides[index].classList.remove('is-active');
+      slides[index].setAttribute('aria-hidden', 'true');
+      index = next;
+      slides[index].classList.add('is-active');
+      slides[index].removeAttribute('aria-hidden');
+      if (current) current.textContent = String(index + 1).padStart(2, '0');
+    };
+    const start = () => {
+      stop();
+      timer = window.setInterval(() => show((index + 1) % slides.length), INTERVAL);
+    };
+    const stop = () => window.clearInterval(timer);
+
+    toggle?.addEventListener('click', () => {
+      paused = !paused;
+      toggle.setAttribute('aria-pressed', String(paused));
+      if (toggleLabel) toggleLabel.textContent = (paused ? toggle.dataset.labelPlay : toggle.dataset.labelPause) ?? '';
+      paused ? stop() : start();
+    });
+
+    // Pause when the tab is hidden or the hero is off-screen.
+    const io = new IntersectionObserver(([entry]) => (entry.isIntersecting && !paused ? start() : stop()));
+    io.observe(slidesRoot);
+    document.addEventListener('astro:before-swap', () => {
+      stop();
+      io.disconnect();
+    }, { once: true });
+  }
+
+  document.addEventListener('astro:page-load', initHero);
+</script>

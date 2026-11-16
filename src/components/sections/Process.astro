@@ -1,0 +1,64 @@
+---
+import { site } from '../../config/site';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+const { title, intro, steps } = site.process;
+---
+
+<section class="process" aria-labelledby="process-title">
+  <div class="container-text">
+    <SectionHeading id="process-title" intro={intro}>{title}</SectionHeading>
+    <ol class="steps">
+      {
+        steps.map((step, i) => (
+          <li class="step reveal-text">
+            <span class="label number tabular" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <h3 class="step-title">{step.title}</h3>
+            <p class="step-text">{step.description}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .process {
+    padding-top: var(--spacing-section);
+  }
+  .steps {
+    margin-top: clamp(3rem, 6vw, 5rem);
+    display: grid;
+    gap: 0 clamp(1rem, 2vw, 2rem);
+  }
+  @media (min-width: 40rem) {
+    .steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 64rem) {
+    .steps {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+  .step {
+    border-top: 1px solid var(--color-ink);
+    padding-block: 1.25rem 2.5rem;
+  }
+  .number {
+    color: var(--color-muted);
+  }
+  .step-title {
+    margin-top: 2rem;
+    font-size: var(--text-h3);
+    line-height: var(--text-h3--line-height);
+  }
+  .step-text {
+    margin-top: 0.75rem;
+    font-size: var(--text-small);
+    line-height: var(--text-small--line-height);
+    color: var(--color-muted);
+  }
+</style>

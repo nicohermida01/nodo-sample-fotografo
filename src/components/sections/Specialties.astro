@@ -1,0 +1,121 @@
+---
+import { Icon } from 'astro-icon/components';
+
+import { site } from '../../config/site';
+import { getProjects } from '../../lib/projects';
+import Photo from '../ui/Photo.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+const projects = await getProjects();
+const items = site.specialties.map((specialty) => {
+  const project = projects.find((p) => p.data.slug === specialty.coverProject) ?? projects.find((p) => p.data.category === specialty.id);
+  return { specialty, cover: project?.data.cover };
+});
+---
+
+<section id="servicios" class="specialties" aria-labelledby="specialties-title">
+  <div class="container-text">
+    <SectionHeading id="specialties-title">{site.ui.specialtiesTitle}</SectionHeading>
+
+    <ul class="list">
+      {
+        items.map(({ specialty, cover }, i) => (
+          <li class="item">
+            <a href={`/trabajos?categoria=${specialty.id}`} class="item-link">
+              {cover && (
+                <Photo
+                  src={cover.src}
+                  alt={cover.alt}
+                  sizes="(min-width: 64rem) 30vw, (min-width: 40rem) 50vw, 100vw"
+                  fill
+                  aspect="4 / 5"
+                  stagger={(i % 3) as 0 | 1 | 2}
+                  class="item-photo"
+                />
+              )}
+              <h3 class="item-title">{specialty.title}</h3>
+              <p class="item-text">{specialty.description}</p>
+              <p class="label item-subtypes">{specialty.subtypes.join(' · ')}</p>
+              <span class="label item-more">
+                <span class="link-draw">
+                  {site.ui.specialtyLink}: {specialty.shortLabel.toLowerCase()}
+                </span>
+                <Icon name="lucide:arrow-right" aria-hidden="true" />
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .specialties {
+    padding-top: var(--spacing-section);
+  }
+  .list {
+    margin-top: clamp(3rem, 6vw, 5rem);
+    display: grid;
+    gap: 4rem clamp(1rem, 2.5vw, 2.5rem);
+  }
+  @media (min-width: 40rem) {
+    .list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 64rem) {
+    .list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .item:nth-child(2) {
+      margin-top: 5rem;
+    }
+  }
+  .item-link {
+    display: block;
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+  .item-link :global(.item-photo img) {
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+  .item-title {
+    margin-top: 1.5rem;
+    font-size: var(--text-h3);
+    line-height: var(--text-h3--line-height);
+  }
+  .item-text {
+    margin-top: 0.75rem;
+    color: var(--color-muted);
+    max-width: 40ch;
+  }
+  .item-subtypes {
+    margin-top: 1rem;
+    color: var(--color-muted);
+  }
+  .item-more {
+    margin-top: 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+  }
+  .item-more :global(svg) {
+    width: 0.875rem;
+    height: 0.875rem;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+  @media (hover: hover) {
+    .item-link:hover :global(.item-photo img) {
+      transform: scale(1.03);
+    }
+    .item-link:hover .item-more :global(svg) {
+      transform: translateX(0.25rem);
+    }
+    .item-link:hover .link-draw::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+  }
+</style>

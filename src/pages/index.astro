@@ -1,16 +1,43 @@
 ---
+import About from '../components/sections/About.astro';
+import Clients from '../components/sections/Clients.astro';
+import Contact from '../components/sections/Contact.astro';
+import Credentials from '../components/sections/Credentials.astro';
+import Faq from '../components/sections/Faq.astro';
+import FeaturedHang from '../components/sections/FeaturedHang.astro';
+import Hero from '../components/sections/Hero.astro';
+import Pricing from '../components/sections/Pricing.astro';
+import Process from '../components/sections/Process.astro';
+import Specialties from '../components/sections/Specialties.astro';
+import Testimonials from '../components/sections/Testimonials.astro';
+import { site } from '../config/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { socialImageUrl } from '../lib/images';
+import { getProjects, projectUrl } from '../lib/projects';
+import { businessLd, imageObjectLd, personLd } from '../lib/seo';
+
+const featured = (await getProjects()).filter((p) => p.data.featured);
+const heroImage = site.hero.images[0];
+
+const jsonLd = [
+  personLd(),
+  businessLd(await socialImageUrl(heroImage.src)),
+  ...(await Promise.all(
+    featured.map((p) => imageObjectLd(p.data.cover.src, p.data.cover.alt, new URL(projectUrl(p), site.url).href)),
+  )),
+];
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title={site.brand.role} description={site.brand.description} jsonLd={jsonLd}>
+  <Hero />
+  <Credentials />
+  <FeaturedHang />
+  <Specialties />
+  <About />
+  <Process />
+  <Pricing />
+  <Testimonials />
+  <Clients />
+  <Faq />
+  <Contact />
+</BaseLayout>
