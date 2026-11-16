@@ -2,7 +2,7 @@
 
 Sitio estático de demostración y template para vender a fotógrafos. Fotógrafo, trabajos y precios
 son **ficticios**. Dos objetivos: mostrar el trabajo con calidad de galería y convertir visitas en
-consultas ("Consultar disponibilidad" / WhatsApp). Ver también `AGENTS.md` (convenciones de Astro).
+consultas ("Consultar disponibilidad" / WhatsApp). Ver también `AGENTS.md` (convenciones de Astro) y `PRODUCT.md` (contexto de producto para Impeccable).
 
 ## Stack
 
@@ -73,7 +73,7 @@ Nunca cargar trabajos en `site.ts`: solo en la collection.
 1. Editá `src/config/site.ts` completo (marca, contacto, paquetes, FAQ, testimonios reales con
    `placeholder: false`, `form.endpoint`/`accessKey`) y `site` en `astro.config.mjs`.
 2. Reemplazá las fotos de `src/assets/hero`, `src/assets/about` y la collection de proyectos.
-3. Con un cliente real: `demoNotice.enabled = false`.
+3. Con un cliente real: `demoNotice.enabled = false`. El crédito "Sitio por Estudio Nodo" se controla con `studioCredit`.
 4. Ajustá los tokens de color/tipografía en `src/styles/global.css` si la marca lo pide.
 
 ---

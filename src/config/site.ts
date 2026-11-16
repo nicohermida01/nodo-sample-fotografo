@@ -158,6 +158,8 @@ export interface SiteConfig {
   };
   legal: { privacyPath: string; copyrightHolder: string };
   demoNotice: { enabled: boolean; text: string };
+  /** Discreet footer credit for the template author. */
+  studioCredit: { enabled: boolean; label: string; name: string; url: string };
 }
 
 // ---------------------------------------------------------------------------
@@ -522,6 +524,14 @@ export const site: SiteConfig = {
   demoNotice: {
     enabled: true,
     text: 'Sitio de demostración: el fotógrafo, los trabajos y los precios son ficticios.',
+  },
+
+  studioCredit: {
+    enabled: true,
+    label: 'Sitio por',
+    name: 'Estudio Nodo',
+    // Placeholder: replace with Estudio Nodo's real URL.
+    url: '#',
   },
 };
 
