@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens go here (see CLAUDE.md → SISTEMA VISUAL).
+ * Planned: --color-bg, --color-surface, --color-ink, --color-muted, --color-line,
+ * --color-accent (light default + dark override), --font-display, --font-sans,
+ * fluid type scale with clamp(), --ease-out-expo.
+ */
+@theme {
+}

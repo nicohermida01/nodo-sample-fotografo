@@ -1,0 +1,35 @@
+---
+/**
+ * Route stub: generates /trabajos/[slug] for every project in the collection.
+ * Intentionally unstyled — the real project page is built later.
+ */
+import type { GetStaticPaths } from 'astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export const getStaticPaths = (async () => {
+  const projects = await getCollection('projects', ({ data }) => !data.draft);
+  return projects.map((project) => ({
+    params: { slug: project.data.slug },
+    props: { project },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+---
+
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex" />
+    <title>{project.data.title}</title>
+  </head>
+  <body>
+    <h1>{project.data.title}</h1>
+    <p>{project.data.gallery.length} fotos · {project.data.category}</p>
+  </body>
+</html>
