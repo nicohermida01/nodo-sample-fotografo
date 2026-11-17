@@ -134,11 +134,12 @@ const total = gallery.length;
     padding-inline: var(--spacing-gutter);
     opacity: 0;
     pointer-events: none;
+    /* Outgoing and incoming slides share the curve, so opacities always sum to 1. */
+    transition: opacity var(--duration-fast) var(--ease-crossfade);
   }
   .slide.is-current {
     opacity: 1;
     pointer-events: auto;
-    transition: opacity var(--duration-base) var(--ease-out);
   }
   .slide :global(picture) {
     display: contents;
@@ -243,7 +244,9 @@ const total = gallery.length;
     dialog.addEventListener('close', () => {
       history.replaceState(history.state, '', `${location.pathname}${location.search}`);
       const target = trigger ?? document.querySelector<HTMLElement>(`[data-lightbox-open="${index}"]`);
-      target?.focus({ preventScroll: false });
+      // Jump straight to the photo instead of smooth-scrolling the whole page.
+      target?.focus({ preventScroll: true });
+      target?.scrollIntoView({ block: 'center', behavior: 'instant' });
     });
 
     // Swipe with one finger; two fingers are left to native pinch-zoom.
