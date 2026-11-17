@@ -59,7 +59,7 @@ Nunca cargar trabajos en `site.ts`: solo en la collection.
 
 1. Elegí un slug en kebab-case, ej. `ana-y-pablo-cacheuta`.
 2. Creá `src/assets/projects/ana-y-pablo-cacheuta/` y poné `cover.jpg` y `01.jpg`, `02.jpg`… (8 a 15 fotos).
-   Exportá en sRGB, lado largo ~2400–3000 px, calidad alta: Astro genera AVIF/WebP y los tamaños.
+   Exportá en sRGB, lado largo ~2400–3000 px, calidad alta: Astro genera WebP (con JPG de respaldo) y los tamaños.
 3. Copiá un `.md` existente de `src/content/projects/` como `ana-y-pablo-cacheuta.md`.
 4. Completá `title`, `slug` (igual al nombre de archivo), `category`, `location`, `date`, `summary`,
    `featured` y `orientation` de la portada.
@@ -196,7 +196,8 @@ Siempre:
 - HTML semántico y accesibilidad AA (contraste, foco visible con `--color-accent`, alt descriptivo de
   cada foto desde la collection, lightbox con teclado, focus trap y cierre con Esc, formulario con
   labels reales y errores accesibles, áreas táctiles ≥ 44 px).
-- Optimización de imágenes: `<Image />` / `<Picture />` con AVIF/WebP, `srcset` y `sizes` correctos
+- Optimización de imágenes: `<Image />` / `<Picture />` con WebP y JPG de respaldo (sin AVIF: con sharp
+  pesaba más que WebP y multiplicaba por 5 el tiempo de build), `srcset` y `sizes` correctos
   para cada layout, `width`/`height` para evitar CLS, `loading="lazy"` salvo el hero
   (`fetchpriority="high"`, `loading="eager"`), placeholder de color dominante o LQIP mientras carga.
   EXIF eliminado (sharp lo hace por defecto; no usar `withMetadata`).

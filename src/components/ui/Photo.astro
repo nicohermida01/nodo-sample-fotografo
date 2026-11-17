@@ -1,6 +1,6 @@
 ---
 /**
- * Responsive photo: AVIF/WebP <picture>, intrinsic width/height (no CLS),
+ * Responsive photo: WebP <picture> with JPG fallback (no AVIF: slower builds, larger files with sharp), intrinsic width/height (no CLS),
  * dominant-color ground while loading. Never crops unless `fill` is set
  * (then the parent decides the aspect ratio).
  */
@@ -60,7 +60,7 @@ const classes = ['photo', fill && 'photo-fill', reveal && 'reveal', parallax && 
       <Picture
         src={src}
         alt={alt}
-        formats={['avif', 'webp']}
+        formats={['webp']}
         widths={usableWidths}
         sizes={sizes}
         loading={eager ? 'eager' : 'lazy'}
@@ -74,7 +74,7 @@ const classes = ['photo', fill && 'photo-fill', reveal && 'reveal', parallax && 
       <Picture
         src={src}
         alt={alt}
-        formats={['avif', 'webp']}
+        formats={['webp']}
         widths={usableWidths}
         sizes={sizes}
         loading={eager ? 'eager' : 'lazy'}

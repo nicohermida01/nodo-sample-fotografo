@@ -24,7 +24,7 @@ disponibilidad (formulario o WhatsApp).
 ## Stack
 
 [Astro 7](https://astro.build) (salida estática) · TypeScript strict · Tailwind CSS v4 · `astro:assets`
-con sharp (AVIF/WebP, sin metadatos EXIF) · Instrument Serif + Inter self-hosted · Lucide vía
+con sharp (WebP con JPG de respaldo, sin metadatos EXIF) · Instrument Serif + Inter self-hosted · Lucide vía
 `astro-icon`. Sin React ni librerías de galería: el JavaScript se limita a islands chicas.
 
 Requiere **Node.js ≥ 22.23.4**.
