@@ -4,10 +4,21 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 import icon from 'astro-icon';
 
+/**
+ * Public site URL (canonical, sitemap, Open Graph, JSON-LD).
+ * 1. SITE_URL env var, when set (use it for a custom domain).
+ * 2. Vercel's production domain, provided automatically at build time.
+ * 3. Placeholder for local builds.
+ */
+const siteUrl =
+  process.env.SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : 'https://tomasaguirre-ejemplo.com');
+
 // https://astro.build/config
 export default defineConfig({
-  // Placeholder domain: replace with the client's real domain (also in src/config/site.ts).
-  site: 'https://tomasaguirre-ejemplo.com',
+  site: siteUrl,
   output: 'static',
   trailingSlash: 'never',
 

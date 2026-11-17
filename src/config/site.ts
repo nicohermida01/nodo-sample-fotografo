@@ -238,7 +238,8 @@ export interface SiteConfig {
 const WHATSAPP = '5492610000000';
 
 export const site: SiteConfig = {
-  url: 'https://tomasaguirre-ejemplo.com',
+  // Resolved from `site` in astro.config.mjs (SITE_URL env var or Vercel's domain). No trailing slash.
+  url: (import.meta.env.SITE ?? 'https://tomasaguirre-ejemplo.com').replace(/\/$/, ''),
   locale: 'es_AR',
   lang: 'es-AR',
 
