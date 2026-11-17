@@ -128,7 +128,7 @@ The system refuses the category default for photographers: a dark full-screen sl
 - Wall-label captions: 11px uppercase Inter, 500 weight, 0.2em tracking.
 - Square corners everywhere, no shadows, 1px hairline rules as the only structure.
 - Photos at their own aspect ratio on a dominant-color ground; cropping only inside fixed-ratio cards.
-- Motion grammar: one ease, 300 / 600 / 900ms, transform, opacity and clip-path only.
+- Motion grammar: an expo ease-out for arrivals and a symmetric curve for crossfades, 300 / 600 / 900ms, transform, opacity and clip-path only.
 
 ## Colors
 
@@ -238,10 +238,10 @@ A hung photograph with a wall-label caption: cover in a fixed 4:5 or 3:2 frame (
 A serif headline followed on the same baseline by a 1px hairline that runs to the container edge, with an optional grey intro (max 52ch) beneath. On narrow screens the rule wraps under the title at full width.
 
 ### Lightbox
-A full-screen bone-paper dialog, not a dark overlay: photo contained within the viewport at its own ratio, tabular counter in the top bar, square 3rem icon buttons with hairline borders that darken to ink on hover, side arrows on desktop. Slides crossfade (600ms) and each photo has its own URL hash.
+A full-screen bone-paper dialog, not a dark overlay: photo contained within the viewport at its own ratio, tabular counter in the top bar, square 3rem icon buttons with hairline borders that darken to ink on hover, side arrows on desktop. Slides crossfade over 300ms on the symmetric crossfade curve, outgoing and incoming together so the stage never flashes empty, and each photo has its own URL hash. Closing returns focus to the photo's tile and jumps to it without a smooth scroll.
 
 ### Motion Grammar
-One easing (`cubic-bezier(0.22, 1, 0.36, 1)`) and three durations (300ms state changes, 600ms reveals and underlines, 900ms photo masks, hero crossfade and line entries). Photos reveal with a clip-path mask opening upward from 14% while rising 24px, scroll-driven where supported and IntersectionObserver otherwise, staggered in steps of 8% of the entry range (90ms in the fallback). Text rises 20px with opacity. The hero headline lines enter 120ms apart. Content is visible by default; every animation is gated on `prefers-reduced-motion: no-preference`, and reduced motion also stops the hero sequence at its first photo.
+Two easings and three durations. `--ease-out` (`cubic-bezier(0.22, 1, 0.36, 1)`) carries every arrival; `--ease-crossfade` (`cubic-bezier(0.45, 0, 0.55, 1)`) carries crossfades only (hero sequence, lightbox slides), so both images share the midpoint and the change reads slow instead of as a cut. Durations: (300ms state changes, 600ms reveals and underlines, 900ms photo masks, hero crossfade and line entries). Photos reveal with a clip-path mask opening upward from 14% while rising 24px, scroll-driven where supported and IntersectionObserver otherwise, staggered in steps of 8% of the entry range (90ms in the fallback). Text rises 20px with opacity. The hero headline lines enter 120ms apart. Scroll-driven timelines live in their own rules (`[class~="reveal"]`, `[class~="reveal-text"]`, `.parallax > :is(picture, img)`), separate from the `animation` shorthand: the CSS minifier otherwise folds `view()` into the shorthand, which browsers reject. Page changes use View Transitions: the shared cover group morphs over 600ms on `--ease-out`, the page cross-fades over 300ms. Content is visible by default; every animation is gated on `prefers-reduced-motion: no-preference`, reduced motion stops the hero sequence at its first photo, and view transitions become instant.
 
 ## Do's and Don'ts
 
@@ -250,7 +250,7 @@ One easing (`cubic-bezier(0.22, 1, 0.36, 1)`) and three durations (300ms state c
 - **Do** caption every piece with the label style (0.6875rem, 500, 0.2em, uppercase) below or beside it.
 - **Do** separate with 1px hairline rules and the fluid section space; end section headings with a rule to the container edge.
 - **Do** keep terracotta to focus, link underlines and the hover of the primary action.
-- **Do** use only the motion grammar: one ease, 300 / 600 / 900ms, transform, opacity and clip-path, with reduced motion honored.
+- **Do** use only the motion grammar: `--ease-out` for arrivals, `--ease-crossfade` for crossfades, 300 / 600 / 900ms, transform, opacity and clip-path, with reduced motion honored.
 - **Do** keep every target at least 2.75rem tall and every photo ground set before it loads.
 - **Do** mark placeholder testimonials with a visible hairline-bordered "Ejemplo" label.
 

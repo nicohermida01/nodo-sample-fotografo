@@ -24,9 +24,10 @@
     },
     "shadows": [],
     "motion": [
-      { "name": "ease-out", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "The only easing in the system." },
-      { "name": "duration-fast", "value": "300ms", "purpose": "Color and border state changes, header rule, skip link." },
-      { "name": "duration-base", "value": "600ms", "purpose": "Underline draw, text rise, menu items, lightbox crossfade, sticky bar." },
+      { "name": "ease-out", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Every arrival: reveals, rises, underlines, state changes, view-transition morph." },
+      { "name": "ease-crossfade", "value": "cubic-bezier(0.45, 0, 0.55, 1)", "purpose": "Crossfades only (hero sequence, lightbox slides): symmetric so both images share the midpoint." },
+      { "name": "duration-fast", "value": "300ms", "purpose": "Color and border state changes, header rule, skip link, lightbox slide crossfade, view-transition page fade." },
+      { "name": "duration-base", "value": "600ms", "purpose": "Underline draw, text rise, menu items, sticky bar, view-transition cover morph." },
       { "name": "duration-slow", "value": "900ms", "purpose": "Photo mask reveal (IO fallback), hero crossfade and headline lines, card photo scale." },
       { "name": "mask-open", "value": "clip-path: inset(14% 0 0 0) + translateY(24px) to none", "purpose": "Photo reveal on scroll; scroll-driven via view() timeline, staggered by 8% of entry range (90ms in fallback)." },
       { "name": "rise", "value": "opacity 0 + translateY(20px) to none", "purpose": "Text reveal, menu items, FAQ answers, lightbox open." },

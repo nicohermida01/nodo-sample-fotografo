@@ -71,7 +71,8 @@ Nunca cargar trabajos en `site.ts`: solo en la collection.
 ### Rebrandear el template
 
 1. Editá `src/config/site.ts` completo (marca, contacto, paquetes, FAQ, testimonios reales con
-   `placeholder: false`, `form.endpoint`/`accessKey`) y `site` en `astro.config.mjs`.
+   `placeholder: false`, `form.endpoint`/`accessKey`). La URL pública se resuelve sola en `astro.config.mjs`:
+   variable `SITE_URL` (dominio propio) o, si no está, el dominio de producción de Vercel.
 2. Reemplazá las fotos de `src/assets/hero`, `src/assets/about` y la collection de proyectos.
 3. Con un cliente real: `demoNotice.enabled = false`. El crédito "Sitio por Estudio Nodo" se controla con `studioCredit`.
 4. Ajustá los tokens de color/tipografía en `src/styles/global.css` si la marca lo pide.
